@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Aluno
+  - Cola
+  - Professor
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - Fileira1
+  - Fileira2
+  - Fileira3
+  - Fileira4
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Fileira1
+    uniqueID: 1236848087
+    locked: 0
+  - name: Fileira2
+    uniqueID: 577959523
+    locked: 0
+  - name: Fileira3
+    uniqueID: 724321411
+    locked: 0
+  - name: Fileira4
+    uniqueID: 1637937029
+    locked: 0

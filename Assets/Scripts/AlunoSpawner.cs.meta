@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 90138bb3461ccf148b6d620d61d480b0
+timeCreated: 1517146253
+licenseType: Free
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - aluno: {fileID: 1748693670096230, guid: 40cd004e242d46f4496ae890fed6f51b, type: 2}
+  - cola: {fileID: 1741836142685860, guid: f581d7d8091cfb84b9dffdbe650bf1d3, type: 2}
+  - cl: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
