@@ -21,11 +21,11 @@ public class ProfessorIA : MonoBehaviour {
             for(int j = 0; j < maxLinhas; j++)
             {
                 Vector2 position = new Vector2(alSpawner.initialX + i * alSpawner.espacamentoX, alSpawner.initialY + j * alSpawner.espacamentoY);
-                AddPonto(new Vector2(position.x - ((i == 0) ? 1.3f : ((i == maxColunas)? 2.7f :2f ) ), position.y + 0.5f));
+                AddPonto(new Vector2(position.x - ((i == 0) ? 1.3f : ((i == maxColunas)? 2.7f :2f ) ), position.y + 1f));
             }
         }
         transform.position = positions[1][3];
-        GetComponent<SpriteRenderer>().sortingLayerName = "Fileira" + maxLinhas;
+        GetComponent<SpriteRenderer>().sortingLayerName = "Fileira1";
     }
 
     // Update is called once per frame
