@@ -45,10 +45,10 @@ public class AlunoController : MonoBehaviour {
         AnimatorOverrideController aoc = new AnimatorOverrideController(animator.runtimeAnimatorController);
         animator.runtimeAnimatorController = aoc;
         aoc["IDLE"] = animIdle[tipoAluno];
-        //aoc["COLANDO"] = animColando[tipoAluno];
         aoc["TRANQUILO"] = animTran[tipoAluno];
         aoc["PASSADIR"] = animPassaDir[tipoAluno];
         aoc["PASSAESQ"] = animPassaEsq[tipoAluno];
+        //aoc["COLANDO"] = animColando[tipoAluno];
         //aoc["PASSAFRENTE"] = animPassaFrente[tipoAluno];
         //aoc["PASSATRAZ"] = animPassaTraz[tipoAluno];
 
@@ -66,13 +66,13 @@ public class AlunoController : MonoBehaviour {
         {
             tempoMinimo -= Time.deltaTime;
         }
-        PassaCola(new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")));
+        PassaCola(new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")));
         
     }
 
-    public void PassaCola(Vector3 velocity)
+    public void PassaCola(Vector2 velocity)
     {
-        if (Mathf.Abs(velocity.x) == Mathf.Abs(velocity.z))
+        if (Mathf.Abs(velocity.x) == Mathf.Abs(velocity.y))
         {
             velocity = new Vector3(0, 0, 0);
         }
@@ -132,11 +132,11 @@ public class AlunoController : MonoBehaviour {
                 if (animator.GetBool("olhandoEsquerda")) Flip();
             }
 
-            if (velocity.z > 0) animator.SetInteger("direcao", 3);
-            else if(velocity.z < 0) animator.SetInteger("direcao", 4);
+            if (velocity.y > 0) animator.SetInteger("direcao", 3);
+            else if(velocity.y < 0) animator.SetInteger("direcao", 4);
             
             animator.SetTrigger("passandoACola");
-            cola.GetComponent<Rigidbody>().velocity = velocity;
+            cola.GetComponent<Rigidbody2D>().velocity = velocity;
             animator.SetBool("temCola", false);
             gameObject.GetComponent<AudioSource>().Play();
             progressoCola.SetActive(false);
@@ -182,7 +182,7 @@ public class AlunoController : MonoBehaviour {
         transform.localScale = flipper;
     }
 
-    public void OnTriggerEnter(Collider collider)
+    public void OnTriggerEnter2D(Collider2D collider)
     {
         if (collider.gameObject.tag == "Cola")
         {
@@ -192,8 +192,8 @@ public class AlunoController : MonoBehaviour {
                 shooter.GetComponent<AlunoController>().shoot = false;
                 RecebeCola();
                 //Destroy(this.gameObject);
-                collider.gameObject.GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
-                collider.transform.position = this.transform.position + Vector3.up;
+                collider.gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+                collider.transform.position = this.transform.position;
             }
         }
     }

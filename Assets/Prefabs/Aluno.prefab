@@ -23,7 +23,7 @@ GameObject:
   - component: {fileID: 212114473031674522}
   - component: {fileID: 95480686549267218}
   - component: {fileID: 82770539034992816}
-  - component: {fileID: 135728159063581736}
+  - component: {fileID: 58048408817684000}
   m_Layer: 0
   m_Name: Aluno
   m_TagString: Aluno
@@ -53,14 +53,14 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1748693670096230}
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -8, y: -4.51, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4639130980198930}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4639130980198930
 Transform:
   m_ObjectHideFlags: 1
@@ -74,6 +74,21 @@ Transform:
   m_Father: {fileID: 4119804523541130}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!58 &58048408817684000
+CircleCollider2D:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1748693670096230}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 1.0216666
 --- !u!82 &82770539034992816
 AudioSource:
   m_ObjectHideFlags: 1
@@ -237,27 +252,15 @@ MonoBehaviour:
   shoot: 0
   position: {x: 0, y: 0}
   terminou: 0
-  tempoMinimoDefinido: 0.5
+  tempoMinimoDefinido: 0.01
   tempoNecessario: 10
   sprites:
   - {fileID: 21300000, guid: ef6791e762d03324599ae501227fee1b, type: 3}
   - {fileID: 21300000, guid: e5d462c7bc38bcb45b363c421c7e04cb, type: 3}
   - {fileID: 21300000, guid: fd743f3f3ed075349a32cb5eb0dd5769, type: 3}
   - {fileID: 21300000, guid: 282d3c99205e4f54e964dfbecac89a12, type: 3}
-  animator: {fileID: 0}
+  animator: {fileID: 95480686549267218}
   anim: {fileID: 0}
---- !u!135 &135728159063581736
-SphereCollider:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1748693670096230}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 1.0216669
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!212 &212114473031674522
 SpriteRenderer:
   m_ObjectHideFlags: 1

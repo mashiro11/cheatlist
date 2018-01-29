@@ -19,12 +19,13 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4444729581829542}
-  - component: {fileID: 135500613307937746}
   - component: {fileID: 212022942779544756}
   - component: {fileID: 114319138992807394}
+  - component: {fileID: 58729445361886960}
+  - component: {fileID: 95542942781667928}
   m_Layer: 0
   m_Name: ProfessorMacaco
-  m_TagString: Untagged
+  m_TagString: Professor
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -37,11 +38,43 @@ Transform:
   m_GameObject: {fileID: 1342368649236632}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 1.24, y: 0.03, z: -4.34}
-  m_LocalScale: {x: 1.5, y: 1, z: 1.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!58 &58729445361886960
+CircleCollider2D:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1342368649236632}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.5
+--- !u!95 &95542942781667928
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1342368649236632}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
 --- !u!114 &114319138992807394
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -53,18 +86,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c638d1cd9612aea438e99673d19f2ad7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!135 &135500613307937746
-SphereCollider:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1342368649236632}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
+  cola: {fileID: 1741836142685860, guid: f581d7d8091cfb84b9dffdbe650bf1d3, type: 2}
 --- !u!212 &212022942779544756
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -99,12 +121,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: a8e03d08e74e4bc419da462b951ee993, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 2cf982daa42d1574d822af4de8834137, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 7.62, y: 13.46}
+  m_Size: {x: 2.54, y: 4.4866667}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1

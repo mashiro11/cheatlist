@@ -10,11 +10,11 @@ public class AlunoSpawner : MonoBehaviour {
     public  float initialX, initialY;
     private bool temCola;
     public float espacamentoX, espacamentoY;
-    const int maxLinhas = 4;
-    const int maxColunas = 5;
+    public int maxLinhas = 4;
+    public int maxColunas = 5;
     public GameObject cola;
     private GameObject[] alunos = null;
-    public GameObject professor;
+    private ProfessorIA professor;
 
     public Dictionary<int,float> zPositionAndSortingLayerPerQueue;
 
@@ -27,38 +27,32 @@ public class AlunoSpawner : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        professor = GameObject.FindGameObjectWithTag("Professor");
+        professor = GameObject.FindGameObjectWithTag("Professor").GetComponent<ProfessorIA>();
 		temCola = false;
         GameObject al;
-        int contador = 0;
         cola.transform.position = this.transform.position;
         //cl = (GameObject)Instantiate(cola, transform.position, Quaternion.identity);
-        zPositionAndSortingLayerPerQueue = new Dictionary<int, float>();
-
+        
         for (int i = 0; i < maxColunas; i++)
         {
-        	for(int j = 0; j < maxLinhas; j++, contador++){
-        		Vector3 position = new Vector3(initialX + i * espacamentoX , 0, initialY + j * espacamentoY);
-                //professorIA.AddPonto(new Vector3(position.x - 2, position.y + 2));
+        	for(int j = 0; j < maxLinhas; j++){
+        		Vector2 position = new Vector2(initialX + i * espacamentoX , initialY + j * espacamentoY);
                 al = ((GameObject)Instantiate(aluno, position, Quaternion.identity));
-                if (!zPositionAndSortingLayerPerQueue.ContainsKey(maxLinhas - j ))
-                    zPositionAndSortingLayerPerQueue.Add(maxLinhas - j,  position.z);
-
+                
                 al.GetComponent<AlunoController>().position = new Vector2(j, i);
                 al.GetComponent<SpriteRenderer>().sortingLayerName = "Fileira" + (maxLinhas-j);
-                al.transform.Rotate(new Vector3(90,0,0));
                 
             	if(!temCola && Random.Range(1,10) > 7){
                     temCola = true;
                     al.GetComponent<AlunoController>().RecebeCola();
-                    cola.transform.position = new Vector3(al.transform.position.x, al.transform.position.y + 1f, al.transform.position.z);
+                    cola.transform.position = al.transform.position;
                     cola.GetComponent<Cola>().shooter = al;
                 }
 
                 if (!temCola && i == 4 && j == 3)
                 {
                     al.GetComponent<AlunoController>().RecebeCola();
-                    cola.transform.position = new Vector3( al.transform.position.x, al.transform.position.y+1f, al.transform.position.z);
+                    cola.transform.position = al.transform.position;
                     cola.GetComponent<Cola>().shooter = al;
                 }
             }

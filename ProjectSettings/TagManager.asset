@@ -7,6 +7,7 @@ TagManager:
   - Aluno
   - Cola
   - Professor
+  - AlunoSpawner
   layers:
   - Default
   - TransparentFX
@@ -55,4 +56,7 @@ TagManager:
     locked: 0
   - name: Fileira4
     uniqueID: 1637937029
+    locked: 0
+  - name: New Layer
+    uniqueID: 593378775
     locked: 0
