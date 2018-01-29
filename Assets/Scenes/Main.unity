@@ -838,6 +838,7 @@ MonoBehaviour:
   espacamentoY: 2.1
   maxLinhas: 4
   maxColunas: 5
+  inicial: {x: 1, y: 3}
   cola: {fileID: 1227652141}
 --- !u!1001 &451402322
 Prefab:
@@ -1572,11 +1573,6 @@ GameObject:
   m_PrefabParentObject: {fileID: 1741836142685860, guid: f581d7d8091cfb84b9dffdbe650bf1d3,
     type: 2}
   m_PrefabInternal: {fileID: 451402322}
---- !u!4 &1227652146 stripped
-Transform:
-  m_PrefabParentObject: {fileID: 4970641614636266, guid: f581d7d8091cfb84b9dffdbe650bf1d3,
-    type: 2}
-  m_PrefabInternal: {fileID: 451402322}
 --- !u!1001 &1232429581
 Prefab:
   m_ObjectHideFlags: 0
@@ -1876,11 +1872,6 @@ MonoBehaviour:
   m_Script: {fileID: -25400194, guid: 9fa2ecd1ff2ad394281dd3bf72c5b76e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _serializedTags:
-  - _guid: 2133a772-b64f-4d75-ad10-e0c11cdf5858
-    _sceneObject: {fileID: 1227652141}
-    _sceneComponents:
-    - {fileID: 1227652146}
 --- !u!4 &1598336719
 Transform:
   m_ObjectHideFlags: 1
@@ -2113,7 +2104,7 @@ GameObject:
   - component: {fileID: 1870903099}
   m_Layer: 0
   m_Name: GameManager
-  m_TagString: Untagged
+  m_TagString: GameManager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

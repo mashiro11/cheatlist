@@ -12,12 +12,9 @@ public class AlunoSpawner : MonoBehaviour {
     public float espacamentoX, espacamentoY;
     public int maxLinhas = 4;
     public int maxColunas = 5;
+    public Vector2 inicial = new Vector2(1, 3);
     public GameObject cola;
     private GameObject[] alunos = null;
-    private ProfessorIA professor;
-
-    public Dictionary<int,float> zPositionAndSortingLayerPerQueue;
-
 
     //public ProfessorIA professorIA;
     private void Awake()
@@ -27,29 +24,20 @@ public class AlunoSpawner : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        professor = GameObject.FindGameObjectWithTag("Professor").GetComponent<ProfessorIA>();
-		temCola = false;
+        temCola = false;
         GameObject al;
         cola.transform.position = this.transform.position;
-        //cl = (GameObject)Instantiate(cola, transform.position, Quaternion.identity);
         
-        for (int i = 0; i < maxColunas; i++)
-        {
-        	for(int j = 0; j < maxLinhas; j++){
-        		Vector2 position = new Vector2(initialX + i * espacamentoX , initialY + j * espacamentoY);
+        for(int i = 0; i < maxLinhas; i++){
+            for (int j = 0; j < maxColunas; j++)
+            {
+                Vector2 position = new Vector2(initialX + j * espacamentoX , initialY + i * espacamentoY);
                 al = ((GameObject)Instantiate(aluno, position, Quaternion.identity));
                 
                 al.GetComponent<AlunoController>().position = new Vector2(j, i);
-                al.GetComponent<SpriteRenderer>().sortingLayerName = "Fileira" + (maxLinhas-j);
-                
-            	if(!temCola && Random.Range(1,10) > 7){
-                    temCola = true;
-                    al.GetComponent<AlunoController>().RecebeCola();
-                    cola.transform.position = al.transform.position;
-                    cola.GetComponent<Cola>().shooter = al;
-                }
+                al.GetComponent<SpriteRenderer>().sortingLayerName = "Fileira" + i;
 
-                if (!temCola && i == 4 && j == 3)
+                if (i == inicial.x && j == inicial.y)
                 {
                     al.GetComponent<AlunoController>().RecebeCola();
                     cola.transform.position = al.transform.position;

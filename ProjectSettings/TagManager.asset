@@ -8,6 +8,7 @@ TagManager:
   - Cola
   - Professor
   - AlunoSpawner
+  - GameManager
   layers:
   - Default
   - TransparentFX
@@ -45,17 +46,17 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: Fileira1
-    uniqueID: 1236848087
+  - name: Fileira3
+    uniqueID: 1637937029
     locked: 0
   - name: Fileira2
-    uniqueID: 577959523
-    locked: 0
-  - name: Fileira3
     uniqueID: 724321411
     locked: 0
-  - name: Fileira4
-    uniqueID: 1637937029
+  - name: Fileira1
+    uniqueID: 577959523
+    locked: 0
+  - name: Fileira0
+    uniqueID: 1236848087
     locked: 0
   - name: New Layer
     uniqueID: 593378775

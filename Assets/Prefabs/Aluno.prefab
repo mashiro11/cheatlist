@@ -248,7 +248,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  velocidadeCola: 5
+  velocidadeCola: 10
   shoot: 0
   position: {x: 0, y: 0}
   terminou: 0

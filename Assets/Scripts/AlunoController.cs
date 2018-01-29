@@ -16,7 +16,6 @@ public class AlunoController : MonoBehaviour {
     public AnimationClip[] animPassaTraz;
 
     public int velocidadeCola;
-    public bool shoot;
     [HideInInspector]
     public Vector2 position;
     public bool terminou = false;
@@ -29,6 +28,7 @@ public class AlunoController : MonoBehaviour {
     public Animator animator;
     public AnimationClip anim;
     private int tipoAluno = 0;
+    private bool busted = false;
     
 
 	// Use this for initialization
@@ -53,21 +53,22 @@ public class AlunoController : MonoBehaviour {
         //aoc["PASSATRAZ"] = animPassaTraz[tipoAluno];
 
         animator.SetBool("temCola", false);
-        shoot = false;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        if (animator.GetBool("temCola") && animator.GetFloat("tempoComCola") < tempoNecessario)
+        if (!busted)
         {
-            MostraProgressoCola();
+            if (animator.GetBool("temCola") && animator.GetFloat("tempoComCola") < tempoNecessario)
+            {
+                MostraProgressoCola();
+            }
+            if (tempoMinimo > 0)
+            {
+                tempoMinimo -= Time.deltaTime;
+            }
+            PassaCola(new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")));
         }
-        if (tempoMinimo > 0)
-        {
-            tempoMinimo -= Time.deltaTime;
-        }
-        PassaCola(new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")));
-        
     }
 
     public void PassaCola(Vector2 velocity)
@@ -140,7 +141,6 @@ public class AlunoController : MonoBehaviour {
             animator.SetBool("temCola", false);
             gameObject.GetComponent<AudioSource>().Play();
             progressoCola.SetActive(false);
-            shoot = true;
             cola.GetComponent<Cola>().shooter = this.gameObject;
         }
     }
@@ -148,22 +148,22 @@ public class AlunoController : MonoBehaviour {
     public void MostraProgressoCola()
     {
         animator.SetFloat("tempoComCola", animator.GetFloat("tempoComCola") + Time.deltaTime);
-        if (animator.GetFloat("tempoComCola") > 2.5f && animator.GetFloat("tempoComCola") < 4.9f)
+        if (animator.GetFloat("tempoComCola") > tempoNecessario/4 && animator.GetFloat("tempoComCola") < tempoNecessario/2)
         {
             progressoCola.GetComponent<SpriteRenderer>().sprite = sprites[1];
         }
-        if (animator.GetFloat("tempoComCola") > 5f && animator.GetFloat("tempoComCola") < 7.4f)
+        if (animator.GetFloat("tempoComCola") > tempoNecessario/2 && animator.GetFloat("tempoComCola") < 3*tempoNecessario/4)
         {
             progressoCola.GetComponent<SpriteRenderer>().sprite = sprites[2];
         }
-        if (animator.GetFloat("tempoComCola") > 7.5f)
+        if (animator.GetFloat("tempoComCola") > tempoNecessario)
         {
             progressoCola.GetComponent<SpriteRenderer>().sprite = sprites[3];
-        }
-        if (animator.GetFloat("tempoComCola") >= 10f && !terminou)
-        {
-            terminou = true;
-            FindObjectOfType<GameManager>().contadorDeAlunos++;
+            if (!terminou)
+            {
+                terminou = true;
+                FindObjectOfType<GameManager>().contadorDeAlunos++;
+            }
         }
     } 
 
@@ -172,6 +172,11 @@ public class AlunoController : MonoBehaviour {
         animator.SetBool("temCola", true);
         tempoMinimo = tempoMinimoDefinido;
         progressoCola.SetActive(true);
+    }
+
+    public void Busted()
+    {
+        busted = true;
     }
 
     public void Flip()
@@ -189,7 +194,6 @@ public class AlunoController : MonoBehaviour {
             GameObject shooter = collider.gameObject.GetComponent<Cola>().shooter;
             if (shooter != this.gameObject)
             {
-                shooter.GetComponent<AlunoController>().shoot = false;
                 RecebeCola();
                 //Destroy(this.gameObject);
                 collider.gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
@@ -197,6 +201,5 @@ public class AlunoController : MonoBehaviour {
             }
         }
     }
-
 
 }

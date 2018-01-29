@@ -21,8 +21,9 @@ GameObject:
   - component: {fileID: 4444729581829542}
   - component: {fileID: 212022942779544756}
   - component: {fileID: 114319138992807394}
-  - component: {fileID: 58729445361886960}
   - component: {fileID: 95542942781667928}
+  - component: {fileID: 50074413041945960}
+  - component: {fileID: 61117431621185078}
   m_Layer: 0
   m_Name: ProfessorMacaco
   m_TagString: Professor
@@ -43,8 +44,28 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!58 &58729445361886960
-CircleCollider2D:
+--- !u!50 &50074413041945960
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1342368649236632}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 1
+  m_Constraints: 0
+--- !u!61 &61117431621185078
+BoxCollider2D:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
@@ -55,9 +76,19 @@ CircleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: -1.08}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 2.54, y: 4.4866667}
+    newSize: {x: 2.54, y: 4.4866667}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Size: {x: 6.39, y: 2.14}
+  m_EdgeRadius: 0
 --- !u!95 &95542942781667928
 Animator:
   serializedVersion: 3
@@ -67,7 +98,7 @@ Animator:
   m_GameObject: {fileID: 1342368649236632}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 836e3bb2d28927d468aa7d72f6f90e4c, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -87,6 +118,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cola: {fileID: 1741836142685860, guid: f581d7d8091cfb84b9dffdbe650bf1d3, type: 2}
+  startingPoint: {x: 3, y: 1}
+  speed: 3
+  waitTime: 4
+  destination: {x: 3, y: 4}
 --- !u!212 &212022942779544756
 SpriteRenderer:
   m_ObjectHideFlags: 1
