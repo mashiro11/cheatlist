@@ -8,12 +8,14 @@ public class AlunoController : MonoBehaviour {
     public GameObject progressoCola;
 
     public AnimationClip[] animIdle;
-    public AnimationClip[] animColando;
     public AnimationClip[] animTran;
     public AnimationClip[] animPassaDir;
     public AnimationClip[] animPassaEsq;
     public AnimationClip[] animPassaFrente;
     public AnimationClip[] animPassaTraz;
+    public AnimationClip[] animColando;
+    AnimatorOverrideController aoc;
+    private bool changed;
 
     public int velocidadeCola;
     [HideInInspector]
@@ -27,14 +29,15 @@ public class AlunoController : MonoBehaviour {
     public Sprite[] sprites;
     public Animator animator;
     public AnimationClip anim;
-    private int tipoAluno = 0;
+    public int tipoAluno = 0;
     private bool busted = false;
     
 
 	// Use this for initialization
 	void Awake () {
-        //tipoAluno = Random.Range(0,5);
-        tipoAluno = 0;
+        tipoAluno = Random.Range(0,2);
+        if(tipoAluno == 2) tipoAluno = 1;
+
         cola = GameObject.FindGameObjectWithTag("Cola");
 
         /*
@@ -42,21 +45,25 @@ public class AlunoController : MonoBehaviour {
          */
         animator = GetComponent<Animator>();
 
-        AnimatorOverrideController aoc = new AnimatorOverrideController(animator.runtimeAnimatorController);
+        aoc = new AnimatorOverrideController(animator.runtimeAnimatorController);
         animator.runtimeAnimatorController = aoc;
-        aoc["IDLE"] = animIdle[tipoAluno];
-        aoc["TRANQUILO"] = animTran[tipoAluno];
-        aoc["PASSADIR"] = animPassaDir[tipoAluno];
-        aoc["PASSAESQ"] = animPassaEsq[tipoAluno];
-        //aoc["COLANDO"] = animColando[tipoAluno];
-        //aoc["PASSAFRENTE"] = animPassaFrente[tipoAluno];
-        //aoc["PASSATRAZ"] = animPassaTraz[tipoAluno];
-
+        
         animator.SetBool("temCola", false);
 	}
 	
 	// Update is called once per frame
 	void Update () {
+        if (!changed)
+        {
+            changed = true;
+            aoc["IDLE"] = animIdle[tipoAluno];
+            aoc["TRANQUILO"] = animTran[tipoAluno];
+            aoc["PASSADIR"] = animPassaDir[tipoAluno];
+            aoc["PASSAESQ"] = animPassaEsq[tipoAluno];
+            //aoc["COLANDO"] = animColando[tipoAluno];
+            //aoc["PASSAFRENTE"] = animPassaFrente[tipoAluno];
+            //aoc["PASSATRAZ"] = animPassaTraz[tipoAluno];
+        }
         if (!busted)
         {
             if (animator.GetBool("temCola") && animator.GetFloat("tempoComCola") < tempoNecessario)
@@ -89,32 +96,32 @@ public class AlunoController : MonoBehaviour {
         {
             if (position.x == 0)
             {
-                Debug.Log("Sou de baixo, pode ir pra cima");
+                //Debug.Log("Sou de baixo, pode ir pra cima");
                 buttonPressed |= Input.GetKeyDown(KeyCode.UpArrow);
             }
             else
             {
-                Debug.Log("Nao sou de baixo, pode ir pra baixo");
+                //Debug.Log("Nao sou de baixo, pode ir pra baixo");
                 buttonPressed |= Input.GetKeyDown(KeyCode.DownArrow);
                 if (position.x != 3)
                 {
-                    Debug.Log("Nao sou de cima, pode ir pra cima");
+                    //Debug.Log("Nao sou de cima, pode ir pra cima");
                     buttonPressed |= Input.GetKeyDown(KeyCode.UpArrow);
                 }
             }
 
             if (position.y == 0)
             {
-                Debug.Log("Sou de esquerda, pode ir pra direita");
+                //Debug.Log("Sou de esquerda, pode ir pra direita");
                 buttonPressed |= Input.GetKeyDown(KeyCode.RightArrow);
             }
             else
             {
-                Debug.Log("Nao sou de esquerda, pode ir pra esquerda");
+                //Debug.Log("Nao sou de esquerda, pode ir pra esquerda");
                 buttonPressed |= Input.GetKeyDown(KeyCode.LeftArrow);
                 if (position.y != 4)
                 {
-                    Debug.Log("Nao sou de direita, pode ir pra direita");
+                    //Debug.Log("Nao sou de direita, pode ir pra direita");
                     buttonPressed |= Input.GetKeyDown(KeyCode.RightArrow);
                 }
             }
@@ -122,7 +129,7 @@ public class AlunoController : MonoBehaviour {
 
         if (animator.GetBool("temCola") && velocity.magnitude > 0 && buttonPressed)
         {
-            Debug.Log(position.x + ", " + position.y);
+            //Debug.Log(position.x + ", " + position.y);
             //GameObject cl = (GameObject)Instantiate(cola, transform.position, Quaternion.identity);
             if (velocity.x < 0) {
                 animator.SetInteger("direcao", 1);

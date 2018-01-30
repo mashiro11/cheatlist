@@ -34,8 +34,9 @@ public class AlunoSpawner : MonoBehaviour {
                 Vector2 position = new Vector2(initialX + j * espacamentoX , initialY + i * espacamentoY);
                 al = ((GameObject)Instantiate(aluno, position, Quaternion.identity));
                 
-                al.GetComponent<AlunoController>().position = new Vector2(j, i);
+                al.GetComponent<AlunoController>().position = new Vector2(i, j);
                 al.GetComponent<SpriteRenderer>().sortingLayerName = "Fileira" + i;
+                //Debug.Log(i + ", " + j);
 
                 if (i == inicial.x && j == inicial.y)
                 {

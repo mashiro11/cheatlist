@@ -28,6 +28,8 @@ public class ProfessorIA : MonoBehaviour {
     void Start () {
         currentPoint = startingPoint;
         destination = startingPoint;
+        GetComponent<SpriteRenderer>().sortingLayerName = "Fileira" + destination.x;
+
         rBody = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         animator.SetFloat("waitTimer", waitTime);
@@ -44,12 +46,11 @@ public class ProfessorIA : MonoBehaviour {
             {
                 Vector2 position = new Vector2(alSpawner.initialX + j * alSpawner.espacamentoX, alSpawner.initialY + i * alSpawner.espacamentoY);
                 AddPonto(new Vector2(position.x - ((j == 0) ? 1.3f : ((j == maxColunas) ? 2.7f : 2f)), position.y + 1f));
-                Debug.Log("Matriz de posicoes (" + i + ", " + j + "):" + positions.Count + ", " + positions[i].Count + " | " + positions[i][j]);
+                //Debug.Log("Matriz de posicoes (" + i + ", " + j + "):" + positions.Count + ", " + positions[i].Count + " | " + positions[i][j]);
             }
         }
-        Debug.Log("Matriz de posicoes: " + positions.Count + ", " + positions[0].Count);
+        //Debug.Log("Matriz de posicoes: " + positions.Count + ", " + positions[0].Count);
         transform.position = positions[(int)startingPoint.x][(int)startingPoint.y];
-        GetComponent<SpriteRenderer>().sortingLayerName = "Fileira1";
     }
 
     // Update is called once per frame
@@ -100,7 +101,7 @@ public class ProfessorIA : MonoBehaviour {
             {
                 if (Random.Range(1, 10) > 5f)
                 {
-                                    //sorteia uma linha             //mantem a coluna
+                    //sorteia uma linha             //mantem a coluna
                     destination.Set(Random.Range(0, maxLinhas - 1), currentPoint.y);
                     //Ajusta o vetor velocidade para chegar lá
                     if (destination.x > currentPoint.x)
@@ -114,18 +115,24 @@ public class ProfessorIA : MonoBehaviour {
                 {                   //mantem a linha       //sorteia uma coluna
                     destination.Set(currentPoint.x, Random.Range(0, maxColunas - 1));
                     if (destination.y > currentPoint.y)
+                    {
                         velocity.Set(1, 0);
+                        animator.SetInteger("direction", 2);
+
+                    }
                     else if (destination.y < currentPoint.y)
+                    {
                         velocity.Set(-1, 0);
-                    animator.SetInteger("direction", 1);
+                        animator.SetInteger("direction", 1);
+                    }
                     if (facingLeft && velocity.x > 0)
                         Flip();
                     else if (!facingLeft && velocity.x < 0)
                         Flip();
                 }
             }
-            Debug.Log("Destination: " + destination + ": " + positions[(int)destination.x][(int)destination.y]);
-            Debug.Log(velocity);
+            //Debug.Log("Destination: " + destination + ": " + positions[(int)destination.x][(int)destination.y]);
+            //Debug.Log(velocity);
             rBody.velocity = velocity * speed;
             waitTimer = waitTime;
         }
@@ -163,12 +170,17 @@ public class ProfessorIA : MonoBehaviour {
     {
         if (collider.gameObject.tag == "Cola")
         {
-            GameObject shooter = collider.gameObject.GetComponent<Cola>().shooter;
-            animator.SetBool("professorStopped", true);
-            animator.SetBool("foundCheat", true);
-            rBody.velocity = Vector2.zero;
-            shooter.GetComponent<AlunoController>().Busted();
+            Debug.Log("Chamei no professor");
+            Catch(collider.gameObject.GetComponent<Cola>().shooter);
         }
+    }
+
+    public void Catch(GameObject shooter)
+    {
+        animator.SetBool("professorStopped", true);
+        animator.SetBool("foundCheat", true);
+        rBody.velocity = Vector2.zero;
+        shooter.GetComponent<AlunoController>().Busted();
     }
 
 

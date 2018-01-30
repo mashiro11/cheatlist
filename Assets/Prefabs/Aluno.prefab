@@ -201,7 +201,7 @@ MonoBehaviour:
   progressoCola: {fileID: 1814337177400174}
   animIdle:
   - {fileID: 7400000, guid: a9acb7a699257f147995b8600acc8c91, type: 2}
-  - {fileID: 0}
+  - {fileID: 7400000, guid: 091947ff3f6815d47aeb704f35a0f198, type: 2}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -215,21 +215,21 @@ MonoBehaviour:
   - {fileID: 0}
   animTran:
   - {fileID: 7400000, guid: 428c68a55622e3c4191763d1aa0901b8, type: 2}
-  - {fileID: 0}
+  - {fileID: 7400000, guid: d5a21257a739acb488d38b6fca1b5db6, type: 2}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   animPassaDir:
   - {fileID: 7400000, guid: 34b60a5eba8050c48b51535635041590, type: 2}
-  - {fileID: 0}
+  - {fileID: 7400000, guid: 7b916d6d9146bc14aa5c6b553638773d, type: 2}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   animPassaEsq:
   - {fileID: 7400000, guid: 34b60a5eba8050c48b51535635041590, type: 2}
-  - {fileID: 0}
+  - {fileID: 7400000, guid: 7b916d6d9146bc14aa5c6b553638773d, type: 2}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -249,7 +249,6 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   velocidadeCola: 10
-  shoot: 0
   position: {x: 0, y: 0}
   terminou: 0
   tempoMinimoDefinido: 0.01
