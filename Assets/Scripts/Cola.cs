@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,7 +13,7 @@ public class Cola : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
+		//oi
 	}
 
     public void OnTriggerEnter(Collider collider)
