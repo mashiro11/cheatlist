@@ -206,13 +206,6 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  animColando:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   animTran:
   - {fileID: 7400000, guid: 428c68a55622e3c4191763d1aa0901b8, type: 2}
   - {fileID: 7400000, guid: d5a21257a739acb488d38b6fca1b5db6, type: 2}
@@ -248,10 +241,17 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  animColando:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   velocidadeCola: 10
   position: {x: 0, y: 0}
   terminou: 0
-  tempoMinimoDefinido: 0.01
+  tempoMinimoDefinido: 0.5
   tempoNecessario: 10
   sprites:
   - {fileID: 21300000, guid: ef6791e762d03324599ae501227fee1b, type: 3}
@@ -260,6 +260,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 282d3c99205e4f54e964dfbecac89a12, type: 3}
   animator: {fileID: 95480686549267218}
   anim: {fileID: 0}
+  tipoAluno: 0
 --- !u!212 &212114473031674522
 SpriteRenderer:
   m_ObjectHideFlags: 1
