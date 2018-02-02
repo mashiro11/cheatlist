@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class AlunoController : MonoBehaviour {
 
@@ -74,20 +75,23 @@ public class AlunoController : MonoBehaviour {
             {
                 tempoMinimo -= Time.deltaTime;
             }
-            PassaCola(new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")));
+            PassaCola();
         }
     }
 
-    public void PassaCola(Vector2 velocity)
+    public void PassaCola()
     {
-        if (Mathf.Abs(velocity.x) == Mathf.Abs(velocity.y))
-        {
-            velocity = new Vector3(0, 0, 0);
-        }
+		bool canThrow = false;
+		#if UNITY_STANDALONE || UNITY_WEBPLAYER
+		Vector2 velocity = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+		if (Mathf.Abs(velocity.x) == Mathf.Abs(velocity.y))
+		{
+			velocity = new Vector3(0, 0, 0);
+		}
 
-        velocity *= velocidadeCola;
-        bool firstTry = false;
-        bool buttonPressed = false;
+		velocity *= velocidadeCola;
+		bool firstTry = false;
+        
         firstTry = Input.GetKeyDown(KeyCode.UpArrow) ||
                     Input.GetKeyDown(KeyCode.DownArrow) ||
                     Input.GetKeyDown(KeyCode.LeftArrow) ||
@@ -97,37 +101,54 @@ public class AlunoController : MonoBehaviour {
             if (position.x == 0)
             {
                 //Debug.Log("Sou de baixo, pode ir pra cima");
-                buttonPressed |= Input.GetKeyDown(KeyCode.UpArrow);
+                canThrow |= Input.GetKeyDown(KeyCode.UpArrow);
             }
             else
             {
                 //Debug.Log("Nao sou de baixo, pode ir pra baixo");
-                buttonPressed |= Input.GetKeyDown(KeyCode.DownArrow);
+                canThrow |= Input.GetKeyDown(KeyCode.DownArrow);
                 if (position.x != 3)
                 {
                     //Debug.Log("Nao sou de cima, pode ir pra cima");
-                    buttonPressed |= Input.GetKeyDown(KeyCode.UpArrow);
+                    canThrow |= Input.GetKeyDown(KeyCode.UpArrow);
                 }
             }
 
             if (position.y == 0)
             {
                 //Debug.Log("Sou de esquerda, pode ir pra direita");
-                buttonPressed |= Input.GetKeyDown(KeyCode.RightArrow);
+                canThrow |= Input.GetKeyDown(KeyCode.RightArrow);
             }
             else
             {
                 //Debug.Log("Nao sou de esquerda, pode ir pra esquerda");
-                buttonPressed |= Input.GetKeyDown(KeyCode.LeftArrow);
+                canThrow |= Input.GetKeyDown(KeyCode.LeftArrow);
                 if (position.y != 4)
                 {
                     //Debug.Log("Nao sou de direita, pode ir pra direita");
-                    buttonPressed |= Input.GetKeyDown(KeyCode.RightArrow);
+                    canThrow |= Input.GetKeyDown(KeyCode.RightArrow);
                 }
             }
         }
+		#elif UNITY_IOS || UNITY_IPHONE || UNITY_ANDROID
+		Vector2 velocity = new Vector2();
+		if(Input.touchCount > 0){
+			Vector2 touchDirection = GetDirection();
 
-        if (animator.GetBool("temCola") && velocity.magnitude > 0 && buttonPressed)
+			if(Mathf.Abs(touchDirection.x) >= Mathf.Abs(touchDirection.y)){
+				velocity.Set(touchDirection.x/Mathf.Abs(touchDirection.x), 0);
+			}else{
+				velocity.Set(0, touchDirection.y/Mathf.Abs(touchDirection.y));
+			}
+			if (animator.GetBool("temCola") && tempoMinimo <= 0)
+			{
+				canThrow = CanThrow(velocity);
+			}
+
+		}
+		#endif
+
+        if (animator.GetBool("temCola") && velocity.magnitude > 0 && canThrow)
         {
             //Debug.Log(position.x + ", " + position.y);
             //GameObject cl = (GameObject)Instantiate(cola, transform.position, Quaternion.identity);
@@ -208,5 +229,64 @@ public class AlunoController : MonoBehaviour {
             }
         }
     }
+
+	public bool CanThrow(Vector2 direction){
+		// position(i==x, j==y), linha e coluna
+		//direction(x, y), direção horizontal ou vertical
+		//coluna move com x
+		//linha move com y
+		bool canThrow = false;
+		if (position.x == 0)
+		{
+			//Debug.Log("Sou de baixo, pode ir pra cima");
+			canThrow |= direction.y == 1;
+		}
+		else
+		{
+			//Debug.Log("Nao sou de baixo, pode ir pra baixo");
+			canThrow |= direction.y == -1;
+			if (position.x != 3)
+			{
+				//Debug.Log("Nao sou de cima, pode ir pra cima");
+				canThrow |= direction.y == 1;
+			}
+		}
+
+		if (position.y == 0)
+		{
+			//Debug.Log("Sou de esquerda, pode ir pra direita");
+			canThrow |= direction.x == 1;
+		}
+		else
+		{
+			//Debug.Log("Nao sou de esquerda, pode ir pra esquerda");
+			canThrow |= direction.x == -1;
+			if (position.y != 4)
+			{
+				//Debug.Log("Nao sou de direita, pode ir pra direita");
+				canThrow |= direction.x == 1;
+			}
+		}
+		return canThrow;
+	}
+
+	private Vector2 GetDirection (){
+		Vector2 touchDirection = new Vector2 ();
+		if (Input.touchCount > 0) {
+			Touch myTouch = Input.touches [0];
+			Vector2 touchOrigin = new Vector2 ();
+			Vector2 touchEnd = new Vector2 ();
+
+
+			if (myTouch.phase == TouchPhase.Began) {
+				touchOrigin = myTouch.position;
+			} else if (myTouch.phase == TouchPhase.Ended) {
+				touchEnd = myTouch.position;
+			}
+			touchDirection.x = touchEnd.x - touchOrigin.x;
+			touchDirection.y = touchEnd.y - touchOrigin.y;
+		}
+		return touchDirection;
+	}
 
 }
