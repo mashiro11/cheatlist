@@ -23,7 +23,7 @@ GameObject:
   - component: {fileID: 95048902496134038}
   - component: {fileID: 96217405842075598}
   m_Layer: 0
-  m_Name: "Avia\u0303o"
+  m_Name: "Avi\xE3o"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

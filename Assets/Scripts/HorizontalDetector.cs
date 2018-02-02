@@ -26,9 +26,9 @@ public class HorizontalDetector : MonoBehaviour {
     {
         if (collision.tag.Equals("Cola"))
         {
-            Debug.Log("Colidiu horizontal:");
-            Debug.Log("Direction: " + professor.GetComponent<Animator>().GetInteger("direction"));
-            Debug.Log("cola|prof: " + collision.transform.position + " | " + professor.transform.position);
+            //Debug.Log("Colidiu horizontal:");
+            //Debug.Log("Direction: " + professor.GetComponent<Animator>().GetInteger("direction"));
+            //Debug.Log("cola|prof: " + collision.transform.position + " | " + professor.transform.position);
 
             if (collision.GetComponent<Rigidbody2D>().velocity.magnitude > 0 &&
                 ((professor.GetComponent<Animator>().GetInteger("direction") == 1 &&
@@ -46,9 +46,9 @@ public class HorizontalDetector : MonoBehaviour {
     {
         if (collision.tag.Equals("Cola"))
         {
-            Debug.Log("Colidiu horizontal:");
-            Debug.Log("Direction: " + professor.GetComponent<Animator>().GetInteger("direction"));
-            Debug.Log("cola|prof: " + collision.transform.position + " | " + professor.transform.position);
+            //Debug.Log("Colidiu horizontal:");
+            //Debug.Log("Direction: " + professor.GetComponent<Animator>().GetInteger("direction"));
+            //Debug.Log("cola|prof: " + collision.transform.position + " | " + professor.transform.position);
 
             if (collision.GetComponent<Rigidbody2D>().velocity.magnitude > 0 &&
                 ((professor.GetComponent<Animator>().GetInteger("direction") == 1 &&

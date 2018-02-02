@@ -22,7 +22,15 @@ public class AlunoController : MonoBehaviour {
     [HideInInspector]
     public Vector2 position;
     public bool terminou = false;
-    
+
+//#if UNITY_IOS || UNITY_IPHONE || UNITY_ANDROID
+    Vector2 touchOrigin = new Vector2(-1, -1);
+    bool clicked = false;
+//#endif
+    const int LEFT_CLICK = 0;
+    const int RIGHT_CLICK = 1;
+    const int MIDDLE_CLICK = 2;
+
     float tempoMinimo;
     public float tempoMinimoDefinido;
     public float tempoNecessario;
@@ -64,6 +72,7 @@ public class AlunoController : MonoBehaviour {
             //aoc["COLANDO"] = animColando[tipoAluno];
             //aoc["PASSAFRENTE"] = animPassaFrente[tipoAluno];
             //aoc["PASSATRAZ"] = animPassaTraz[tipoAluno];
+
         }
         if (!busted)
         {
@@ -75,80 +84,22 @@ public class AlunoController : MonoBehaviour {
             {
                 tempoMinimo -= Time.deltaTime;
             }
-            PassaCola();
+
+            Vector2 direction = GetInputDirection();
+            if (direction.magnitude != 0)
+            {
+                PassaCola(direction);
+            }
         }
     }
 
-    public void PassaCola()
+    public void PassaCola(Vector2 direction)
     {
-		bool canThrow = false;
-		#if UNITY_STANDALONE || UNITY_WEBPLAYER
-		Vector2 velocity = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-		if (Mathf.Abs(velocity.x) == Mathf.Abs(velocity.y))
-		{
-			velocity = new Vector3(0, 0, 0);
-		}
+		Vector2 velocity = direction * velocidadeCola; //input direction 
 
-		velocity *= velocidadeCola;
-		bool firstTry = false;
-        
-        firstTry = Input.GetKeyDown(KeyCode.UpArrow) ||
-                    Input.GetKeyDown(KeyCode.DownArrow) ||
-                    Input.GetKeyDown(KeyCode.LeftArrow) ||
-                    Input.GetKeyDown(KeyCode.RightArrow);
-        if (firstTry && animator.GetBool("temCola") && tempoMinimo <= 0)
-        {
-            if (position.x == 0)
-            {
-                //Debug.Log("Sou de baixo, pode ir pra cima");
-                canThrow |= Input.GetKeyDown(KeyCode.UpArrow);
-            }
-            else
-            {
-                //Debug.Log("Nao sou de baixo, pode ir pra baixo");
-                canThrow |= Input.GetKeyDown(KeyCode.DownArrow);
-                if (position.x != 3)
-                {
-                    //Debug.Log("Nao sou de cima, pode ir pra cima");
-                    canThrow |= Input.GetKeyDown(KeyCode.UpArrow);
-                }
-            }
-
-            if (position.y == 0)
-            {
-                //Debug.Log("Sou de esquerda, pode ir pra direita");
-                canThrow |= Input.GetKeyDown(KeyCode.RightArrow);
-            }
-            else
-            {
-                //Debug.Log("Nao sou de esquerda, pode ir pra esquerda");
-                canThrow |= Input.GetKeyDown(KeyCode.LeftArrow);
-                if (position.y != 4)
-                {
-                    //Debug.Log("Nao sou de direita, pode ir pra direita");
-                    canThrow |= Input.GetKeyDown(KeyCode.RightArrow);
-                }
-            }
-        }
-		#elif UNITY_IOS || UNITY_IPHONE || UNITY_ANDROID
-		Vector2 velocity = new Vector2();
-		if(Input.touchCount > 0){
-			Vector2 touchDirection = GetDirection();
-
-			if(Mathf.Abs(touchDirection.x) >= Mathf.Abs(touchDirection.y)){
-				velocity.Set(touchDirection.x/Mathf.Abs(touchDirection.x), 0);
-			}else{
-				velocity.Set(0, touchDirection.y/Mathf.Abs(touchDirection.y));
-			}
-			if (animator.GetBool("temCola") && tempoMinimo <= 0)
-			{
-				canThrow = CanThrow(velocity);
-			}
-
-		}
-		#endif
-
-        if (animator.GetBool("temCola") && velocity.magnitude > 0 && canThrow)
+        if (animator.GetBool("temCola") && 
+            tempoMinimo <= 0 && 
+            CanThrow(direction))
         {
             //Debug.Log(position.x + ", " + position.y);
             //GameObject cl = (GameObject)Instantiate(cola, transform.position, Quaternion.identity);
@@ -236,57 +187,112 @@ public class AlunoController : MonoBehaviour {
 		//coluna move com x
 		//linha move com y
 		bool canThrow = false;
-		if (position.x == 0)
-		{
-			//Debug.Log("Sou de baixo, pode ir pra cima");
-			canThrow |= direction.y == 1;
-		}
-		else
-		{
-			//Debug.Log("Nao sou de baixo, pode ir pra baixo");
-			canThrow |= direction.y == -1;
-			if (position.x != 3)
-			{
-				//Debug.Log("Nao sou de cima, pode ir pra cima");
-				canThrow |= direction.y == 1;
-			}
-		}
+        bool cima = direction.y == 1;
+        bool baixo = direction.y == -1;
+        bool esquerda = direction.x == -1;
+        bool direita = direction.x == 1;
 
-		if (position.y == 0)
-		{
-			//Debug.Log("Sou de esquerda, pode ir pra direita");
-			canThrow |= direction.x == 1;
-		}
-		else
-		{
-			//Debug.Log("Nao sou de esquerda, pode ir pra esquerda");
-			canThrow |= direction.x == -1;
-			if (position.y != 4)
-			{
-				//Debug.Log("Nao sou de direita, pode ir pra direita");
-				canThrow |= direction.x == 1;
-			}
-		}
+        if (position.x == 0)
+        {
+            //Debug.Log("Sou de baixo, pode ir pra cima");
+            canThrow |= cima;
+        }
+        else
+        {
+            //Debug.Log("Nao sou de baixo, pode ir pra baixo");
+            canThrow |= baixo;
+            if (position.x != 3)
+            {
+                //Debug.Log("Nao sou de cima, pode ir pra cima");
+                canThrow |= cima;
+            }
+        }
+
+        if (position.y == 0)
+        {
+            //Debug.Log("Sou de esquerda, pode ir pra direita");
+            canThrow |= direita;
+        }
+        else
+        {
+            //Debug.Log("Nao sou de esquerda, pode ir pra esquerda");
+            canThrow |= esquerda;
+            if (position.y != 4)
+            {
+                //Debug.Log("Nao sou de direita, pode ir pra direita");
+                canThrow |= direita;
+            }
+        }
 		return canThrow;
 	}
 
-	private Vector2 GetDirection (){
-		Vector2 touchDirection = new Vector2 ();
-		if (Input.touchCount > 0) {
-			Touch myTouch = Input.touches [0];
-			Vector2 touchOrigin = new Vector2 ();
-			Vector2 touchEnd = new Vector2 ();
+	private Vector2 GetInputDirection()
+    {
+        Vector2 direction = Vector2.zero;
 
+#if UNITY_STANDALONE || UNITY_WEBPLAYER
+        direction.Set(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+        if (Mathf.Abs(direction.x) == Mathf.Abs(direction.y))
+        {
+            direction.Set(0, 0);
+        }
 
-			if (myTouch.phase == TouchPhase.Began) {
-				touchOrigin = myTouch.position;
-			} else if (myTouch.phase == TouchPhase.Ended) {
-				touchEnd = myTouch.position;
-			}
-			touchDirection.x = touchEnd.x - touchOrigin.x;
-			touchDirection.y = touchEnd.y - touchOrigin.y;
-		}
-		return touchDirection;
-	}
+        if (Input.GetMouseButtonDown(LEFT_CLICK) && !clicked)
+        {
+            touchOrigin = Input.mousePosition;
+            Debug.Log("ori: " + touchOrigin);
+            clicked = true;
+        }
+        else if (Input.GetMouseButtonUp(LEFT_CLICK) && clicked)
+        {
+            Vector2 touchEnd = Input.mousePosition;
+            direction.x = touchEnd.x - touchOrigin.x;
+            direction.y = touchEnd.y - touchOrigin.y;
+            Debug.Log("end: " + touchEnd);
+            touchOrigin.Set(-1, -1);
+            
+            if (Mathf.Abs(direction.x) == Mathf.Abs(direction.y))
+            {
+                direction.Set(0, 0);
+            }else if(Mathf.Abs(direction.x) > Mathf.Abs(direction.y))
+            {
+                direction.Set(direction.x / Mathf.Abs(direction.x), 0);
+            }else if (Mathf.Abs(direction.x) < Mathf.Abs(direction.y))
+            {
+                direction.Set(0, direction.y/ Mathf.Abs(direction.y));
+            }
+            clicked = false;
+        }
+
+#elif UNITY_IOS || UNITY_IPHONE || UNITY_ANDROID
+        if (Input.touchCount > 0)
+        {
+            Touch myTouch = Input.touches[0];
+            
+            if (myTouch.phase == TouchPhase.Began)
+            {
+                touchOrigin = myTouch.position;
+            }
+            else if (myTouch.phase == TouchPhase.Ended)
+            {
+                Vector2 touchEnd = myTouch.position;
+                direction.x = touchEnd.x - touchOrigin.x;
+                direction.y = touchEnd.y - touchOrigin.y;
+                touchOrigin.Set(-1, -1);
+                if (Mathf.Abs(direction.x) == Mathf.Abs(direction.y))
+                {
+                    direction.Set(0, 0);
+                }else if(Mathf.Abs(direction.x) > Mathf.Abs(direction.y))
+                {
+                    direction.Set(direction.x / Mathf.Abs(direction.x), 0);
+                }else if (Mathf.Abs(direction.x) < Mathf.Abs(direction.y))
+                {
+                    direction.Set(0, direction.y/ Mathf.Abs(direction.y));
+                }
+            }            
+        }
+#endif
+        return direction;
+    }
 
 }
