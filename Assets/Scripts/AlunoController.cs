@@ -7,6 +7,7 @@ public class AlunoController : MonoBehaviour {
 
     public GameObject cola;
     public GameObject progressoCola;
+    public AudioClip[] sounds;
 
     public AnimationClip[] animIdle;
     public AnimationClip[] animTran;
@@ -39,7 +40,8 @@ public class AlunoController : MonoBehaviour {
     public Animator animator;
     public AnimationClip anim;
     public int tipoAluno = 0;
-    private bool busted = false;
+    public static bool busted = false;
+    private AudioSource aSource;
     
 
 	// Use this for initialization
@@ -48,7 +50,7 @@ public class AlunoController : MonoBehaviour {
         if(tipoAluno == 2) tipoAluno = 1;
 
         cola = GameObject.FindGameObjectWithTag("Cola");
-
+        aSource = GetComponent<AudioSource>();
         /*
          *  Selecionando as animacoes 
          */
@@ -118,7 +120,7 @@ public class AlunoController : MonoBehaviour {
             animator.SetTrigger("passandoACola");
             cola.GetComponent<Rigidbody2D>().velocity = velocity;
             animator.SetBool("temCola", false);
-            gameObject.GetComponent<AudioSource>().Play();
+            aSource.Play();
             progressoCola.SetActive(false);
             cola.GetComponent<Cola>().shooter = this.gameObject;
         }
@@ -156,6 +158,10 @@ public class AlunoController : MonoBehaviour {
     public void Busted()
     {
         busted = true;
+        aSource.Stop();
+        aSource.clip = sounds[1];
+        aSource.Play();
+        animator.SetTrigger("busted");
     }
 
     public void Flip()

@@ -69,8 +69,9 @@ public class GameManager : MonoBehaviour {
 
     void RestartLevel()
     {
+        AlunoController.busted = false;
         Time.timeScale = 1f;
-        timer = 240f;
+        timer = 260f;
         contadorDeAlunos = 0;
     }
 }

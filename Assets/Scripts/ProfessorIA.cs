@@ -170,7 +170,7 @@ public class ProfessorIA : MonoBehaviour {
     {
         if (collider.gameObject.tag == "Cola")
         {
-            Debug.Log("Chamei no professor");
+            //Debug.Log("Chamei no professor");
             Catch(collider.gameObject.GetComponent<Cola>().shooter);
         }
     }
@@ -179,6 +179,7 @@ public class ProfessorIA : MonoBehaviour {
     {
         animator.SetBool("professorStopped", true);
         animator.SetBool("foundCheat", true);
+        GameObject.Find("Camera").GetComponent<CameraController>().EndGame();
         rBody.velocity = Vector2.zero;
         shooter.GetComponent<AlunoController>().Busted();
     }
