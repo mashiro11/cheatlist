@@ -1,0 +1,6 @@
+TODO LIST
+	 - velocidade transferência;	OK
+	 - animações;
+	 - sons;			OK
+	 - troca de música;		OK
+	

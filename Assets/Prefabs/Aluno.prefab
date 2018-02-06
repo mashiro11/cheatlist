@@ -199,6 +199,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cola: {fileID: 0}
   progressoCola: {fileID: 1814337177400174}
+  sounds:
+  - {fileID: 8300000, guid: b8338be3119c30b4d8944f369a700f0a, type: 3}
+  - {fileID: 8300000, guid: 07889479e3f30a849aad00d5e62ec333, type: 3}
   animIdle:
   - {fileID: 7400000, guid: a9acb7a699257f147995b8600acc8c91, type: 2}
   - {fileID: 7400000, guid: 091947ff3f6815d47aeb704f35a0f198, type: 2}
@@ -248,10 +251,10 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  velocidadeCola: 10
+  velocidadeCola: 15
   position: {x: 0, y: 0}
   terminou: 0
-  tempoMinimoDefinido: 0.5
+  tempoMinimoDefinido: 0.2
   tempoNecessario: 10
   sprites:
   - {fileID: 21300000, guid: ef6791e762d03324599ae501227fee1b, type: 3}
