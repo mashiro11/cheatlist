@@ -7,8 +7,25 @@ using Utils;
 public class canvasController : MonoBehaviour {
 
     public Text tutorText;
-	// Use this for initialization
-	void Start () {
+    public GameObject tutorialUI;
+
+    private void Awake()
+    {
+        Time.timeScale = 0f;
+    }
+    private void Start()
+    {
+        Time.timeScale = 0f;
+    }
+
+    public void LeaveTutorial()
+    {
+        Time.timeScale = 1f;
+        tutorialUI.SetActive(false);
+    }
+
+    // Use this for initialization
+    /*void Start () {
         if (tutorText == null)
         { 
             Debug.LogError("Error: tutorText não definido");
@@ -23,13 +40,13 @@ public class canvasController : MonoBehaviour {
 	}
     IEnumerator Tutor()
     {
-        var textToWrite = "Make everyone cheat within test time. Gogogogogogo!";
-        foreach (var t in new MimicWriting().TypeText(textToWrite, 2f))
+        var textToWrite = "The objective is to pass the cheat sheet to all the students before the time runs out. All of them must  spend enough time to finish copying the answers. Meanwhile, avoid the sight of the teacher.";
+        foreach (var t in new MimicWriting().TypeText(textToWrite, 5f))
         {
             tutorText.text = t;
             yield return null;
         }
         yield return new WaitForSeconds(5f);
         tutorText.text = "";
-    }
+    }*/
 }

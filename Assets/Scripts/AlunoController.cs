@@ -8,6 +8,8 @@ public class AlunoController : MonoBehaviour {
     public GameObject cola;
     public GameObject progressoCola;
     public AudioClip[] sounds;
+    float colaRapida = 1;
+    public bool dedoDuro;
 
     public AnimationClip[] animIdle;
     public AnimationClip[] animTran;
@@ -123,12 +125,18 @@ public class AlunoController : MonoBehaviour {
             aSource.Play();
             progressoCola.SetActive(false);
             cola.GetComponent<Cola>().shooter = this.gameObject;
+            FindObjectOfType<FrontDetectorController>().colaNasCostas = false;
         }
     }
 
     public void MostraProgressoCola()
     {
-        animator.SetFloat("tempoComCola", animator.GetFloat("tempoComCola") + Time.deltaTime);
+        if (FindObjectOfType<FrontDetectorController>().colaNasCostas)
+        {
+            colaRapida = 2;
+        }
+        animator.SetFloat("tempoComCola", animator.GetFloat("tempoComCola") + Time.deltaTime * colaRapida);
+        
         if (animator.GetFloat("tempoComCola") > tempoNecessario/4 && animator.GetFloat("tempoComCola") < tempoNecessario/2)
         {
             progressoCola.GetComponent<SpriteRenderer>().sprite = sprites[1];

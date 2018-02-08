@@ -5,6 +5,8 @@ using UnityEngine;
 public class FrontDetectorController : MonoBehaviour {
 
     private GameObject professor;
+    public bool colaNasCostas;
+    public float distanciaDaCola;
     // Use this for initialization
 	void Start () {
         professor = GameObject.FindGameObjectWithTag("Professor");
@@ -34,6 +36,12 @@ public class FrontDetectorController : MonoBehaviour {
             {
                 professor.GetComponent<ProfessorIA>().Catch(collision.GetComponent<Cola>().shooter);
             }
+
+            if  (((Mathf.Abs(collision.transform.position.y - professor.transform.position.y) < distanciaDaCola )))
+            {
+                colaNasCostas = true;
+            }
+
         }
     }
 }

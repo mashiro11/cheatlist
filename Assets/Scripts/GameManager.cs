@@ -13,13 +13,18 @@ public class GameManager : MonoBehaviour {
     public Text timerText;
     public float timer;
     public int contadorDeAlunos;
+    public static int contadorDeDedoDuro;
+
 
     // Use this for initialization
     void Start () {
         Screen.orientation = ScreenOrientation.Landscape;
         Instance = this;
         RestartLevel();
-	}
+        Debug.Log("Alunos para acabar: " + (20 - contadorDeDedoDuro));
+        Debug.Log("Alunos dedo duros: " + contadorDeDedoDuro);
+    }
+
 	
 	// Update is called once per frame
 	void Update () {
@@ -30,8 +35,9 @@ public class GameManager : MonoBehaviour {
             GameOver();
         }
 
-        if (contadorDeAlunos >= 20)
+        if (contadorDeAlunos >= 20 - contadorDeDedoDuro)
         {
+            GameObject.Find("Camera").GetComponent<CameraController>().WinGame();
             GanhouJogo();
         }
     }
@@ -57,6 +63,10 @@ public class GameManager : MonoBehaviour {
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         Time.timeScale = 1f;
+        AlunoController.busted = false;
+        timer = 260f;
+        contadorDeAlunos = 0;
+        contadorDeDedoDuro = 0;
 
     }
 
@@ -69,9 +79,6 @@ public class GameManager : MonoBehaviour {
 
     void RestartLevel()
     {
-        AlunoController.busted = false;
-        Time.timeScale = 1f;
-        timer = 260f;
-        contadorDeAlunos = 0;
+       
     }
 }

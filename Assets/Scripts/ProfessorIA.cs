@@ -99,10 +99,10 @@ public class ProfessorIA : MonoBehaviour {
         {
             while (destination == currentPoint)
             {
-                if (Random.Range(1, 10) > 5f)
+                if (Random.Range(1, 11) > 5f)
                 {
                     //sorteia uma linha             //mantem a coluna
-                    destination.Set(Random.Range(0, maxLinhas - 1), currentPoint.y);
+                    destination.Set(Random.Range(0, maxLinhas), currentPoint.y);
                     //Ajusta o vetor velocidade para chegar lá
                     if (destination.x > currentPoint.x)
                         velocity.Set(0, 1);
@@ -113,7 +113,7 @@ public class ProfessorIA : MonoBehaviour {
                 }
                 else
                 {                   //mantem a linha       //sorteia uma coluna
-                    destination.Set(currentPoint.x, Random.Range(0, maxColunas - 1));
+                    destination.Set(currentPoint.x, Random.Range(0, maxColunas));
                     if (destination.y > currentPoint.y)
                     {
                         velocity.Set(1, 0);

@@ -37,12 +37,25 @@ public class AlunoSpawner : MonoBehaviour {
                 al.GetComponent<AlunoController>().position = new Vector2(i, j);
                 al.GetComponent<SpriteRenderer>().sortingLayerName = "Fileira" + i;
                 //Debug.Log(i + ", " + j);
+                if (Random.Range (1, 11) <= 1)
+                {
+                    al.GetComponent<AlunoController>().dedoDuro = true;
+                    GameManager.contadorDeDedoDuro++;
+                    Debug.Log("adicionei, seu burro");
+                }
 
                 if (i == inicial.x && j == inicial.y)
                 {
                     al.GetComponent<AlunoController>().RecebeCola();
                     cola.transform.position = al.transform.position;
                     cola.GetComponent<Cola>().shooter = al;
+                    
+                    if (al.GetComponent<AlunoController>().dedoDuro)
+                    {
+                        al.GetComponent<AlunoController>().dedoDuro = false;
+                        GameManager.contadorDeDedoDuro--;
+                        Debug.Log("chamei, seu burro");
+                    }
                 }
             }
         }

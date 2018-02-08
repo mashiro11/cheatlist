@@ -23,4 +23,12 @@ public class CameraController : MonoBehaviour {
         aSource.Play();
         aSource.loop = false;
     }
+
+    public void WinGame()
+    {
+        aSource.Stop();
+        aSource.clip = sounds[2];
+        aSource.Play();
+        aSource.loop = false;
+    }
 }
