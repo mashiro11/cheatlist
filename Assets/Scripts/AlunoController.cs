@@ -243,14 +243,7 @@ public class AlunoController : MonoBehaviour {
 	private Vector2 GetInputDirection()
     {
         Vector2 direction = Vector2.zero;
-
-#if UNITY_STANDALONE || UNITY_WEBPLAYER
-        direction.Set(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-        if (Mathf.Abs(direction.x) == Mathf.Abs(direction.y))
-        {
-            direction.Set(0, 0);
-        }
-
+        //Mouse funciona independente do target device
         if (Input.GetMouseButtonDown(LEFT_CLICK) && !clicked)
         {
             touchOrigin = Input.mousePosition;
@@ -264,18 +257,26 @@ public class AlunoController : MonoBehaviour {
             direction.y = touchEnd.y - touchOrigin.y;
             Debug.Log("end: " + touchEnd);
             touchOrigin.Set(-1, -1);
-            
+
             if (Mathf.Abs(direction.x) == Mathf.Abs(direction.y))
             {
                 direction.Set(0, 0);
-            }else if(Mathf.Abs(direction.x) > Mathf.Abs(direction.y))
+            }
+            else if (Mathf.Abs(direction.x) > Mathf.Abs(direction.y))
             {
                 direction.Set(direction.x / Mathf.Abs(direction.x), 0);
-            }else if (Mathf.Abs(direction.x) < Mathf.Abs(direction.y))
+            }
+            else if (Mathf.Abs(direction.x) < Mathf.Abs(direction.y))
             {
-                direction.Set(0, direction.y/ Mathf.Abs(direction.y));
+                direction.Set(0, direction.y / Mathf.Abs(direction.y));
             }
             clicked = false;
+        }
+#if UNITY_STANDALONE || UNITY_WEBPLAYER
+        direction.Set(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+        if (Mathf.Abs(direction.x) == Mathf.Abs(direction.y))
+        {
+            direction.Set(0, 0);
         }
 
 #elif UNITY_IOS || UNITY_IPHONE || UNITY_ANDROID
