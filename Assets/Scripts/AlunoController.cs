@@ -7,6 +7,7 @@ public class AlunoController : MonoBehaviour {
 
     public GameObject cola;
     public GameObject progressoCola;
+    
     public AudioClip[] sounds;
     float colaRapida = 1;
     public bool dedoDuro;
@@ -25,9 +26,12 @@ public class AlunoController : MonoBehaviour {
     [HideInInspector]
     public Vector2 position;
     public bool terminou = false;
+    public bool draggin = false;
+    public float maxDragging;
 
 //#if UNITY_IOS || UNITY_IPHONE || UNITY_ANDROID
-    Vector2 touchOrigin = new Vector2(-1, -1);
+    public Vector2 touchOrigin = new Vector2(-1, -1);
+    public Vector2 touchEnd = new Vector2(-1, -1);
     bool clicked = false;
 //#endif
     const int LEFT_CLICK = 0;
@@ -44,28 +48,36 @@ public class AlunoController : MonoBehaviour {
     public int tipoAluno = 0;
     public static bool busted = false;
     private AudioSource aSource;
-    
+    private LineRenderer lineRenderer;
 
 	// Use this for initialization
 	void Awake () {
         tipoAluno = Random.Range(0,2);
         if(tipoAluno == 2) tipoAluno = 1;
-
+        
         cola = GameObject.FindGameObjectWithTag("Cola");
         aSource = GetComponent<AudioSource>();
         /*
          *  Selecionando as animacoes 
          */
         animator = GetComponent<Animator>();
-
         aoc = new AnimatorOverrideController(animator.runtimeAnimatorController);
         animator.runtimeAnimatorController = aoc;
         
         animator.SetBool("temCola", false);
 	}
-	
-	// Update is called once per frame
-	void Update () {
+    private void Start()
+    {
+        lineRenderer = GetComponent<LineRenderer>();
+        lineRenderer.positionCount = 2;
+        lineRenderer.SetPosition(0, transform.position);
+        lineRenderer.SetPosition(1, transform.position);
+        lineRenderer.sortingLayerName = GetComponent<SpriteRenderer>().sortingLayerName;
+        lineRenderer.enabled = false;
+    }
+
+    // Update is called once per frame
+    void Update () {
         if (!changed)
         {
             changed = true;
@@ -78,9 +90,9 @@ public class AlunoController : MonoBehaviour {
             //aoc["PASSATRAZ"] = animPassaTraz[tipoAluno];
 
         }
-        if (!busted)
+        if (!busted && animator.GetBool("temCola"))
         {
-            if (animator.GetBool("temCola") && animator.GetFloat("tempoComCola") < tempoNecessario)
+            if (animator.GetFloat("tempoComCola") < tempoNecessario)
             {
                 MostraProgressoCola();
             }
@@ -88,11 +100,13 @@ public class AlunoController : MonoBehaviour {
             {
                 tempoMinimo -= Time.deltaTime;
             }
-
-            Vector2 direction = GetInputDirection();
-            if (direction.magnitude != 0)
+            if (!draggin)
             {
-                PassaCola(direction);
+                Vector2 direction = GetInputDirection();
+                if (direction.magnitude != 0)
+                {
+                    PassaCola(direction);
+                }
             }
         }
     }
@@ -247,15 +261,15 @@ public class AlunoController : MonoBehaviour {
         if (Input.GetMouseButtonDown(LEFT_CLICK) && !clicked)
         {
             touchOrigin = Input.mousePosition;
-            Debug.Log("ori: " + touchOrigin);
+            //Debug.Log("ori: " + touchOrigin);
             clicked = true;
         }
         else if (Input.GetMouseButtonUp(LEFT_CLICK) && clicked)
         {
-            Vector2 touchEnd = Input.mousePosition;
+            touchEnd = Input.mousePosition;
             direction.x = touchEnd.x - touchOrigin.x;
             direction.y = touchEnd.y - touchOrigin.y;
-            Debug.Log("end: " + touchEnd);
+            //Debug.Log("end: " + touchEnd);
             touchOrigin.Set(-1, -1);
 
             if (Mathf.Abs(direction.x) == Mathf.Abs(direction.y))
@@ -309,5 +323,45 @@ public class AlunoController : MonoBehaviour {
 #endif
         return direction;
     }
-
+    private void OnMouseDown()
+    {
+        if (animator.GetBool("temCola"))
+        {
+            draggin = true;
+            Debug.Log("Clicou em mim");
+            touchOrigin = transform.position;
+            lineRenderer.SetPosition(1, touchOrigin);
+            lineRenderer.enabled = true;
+        }
+    }
+    private void OnMouseUp()
+    {
+        draggin = false;
+        Debug.Log("Me soltou");
+        touchEnd = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        lineRenderer.SetPosition(1, transform.position);
+        
+        lineRenderer.enabled = false;
+    }
+    private void OnMouseDrag()
+    {
+        if (animator.GetBool("temCola"))
+        {
+            Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 direction = mousePosition - touchOrigin;
+            
+            if (direction.magnitude < maxDragging)
+            {
+                lineRenderer.SetPosition(1, Camera.main.ScreenToWorldPoint(Input.mousePosition));
+            }
+            else
+            {   
+                direction.Set( direction.x / direction.magnitude, direction.y / direction.magnitude);//Vetor unitário
+                direction *= maxDragging;//vetor de tamanho 3 a partir da origem
+                direction.Set(direction.x + transform.position.x, direction.y + transform.position.y);//vetor transladado
+                lineRenderer.SetPosition(1, direction);
+            }
+            Debug.Log("Me arrastandooo");
+        }
+    }
 }
