@@ -28,6 +28,7 @@ public class AlunoController : MonoBehaviour {
     public bool terminou = false;
     public bool draggin = false;
     public float maxDragging;
+    public float maxDistance;
 
 //#if UNITY_IOS || UNITY_IPHONE || UNITY_ANDROID
     public Vector2 touchOrigin = new Vector2(-1, -1);
@@ -49,6 +50,8 @@ public class AlunoController : MonoBehaviour {
     public static bool busted = false;
     private AudioSource aSource;
     private LineRenderer lineRenderer;
+    private LineRenderer arcRenderer;
+    private Camera cam;
 
 	// Use this for initialization
 	void Awake () {
@@ -68,12 +71,21 @@ public class AlunoController : MonoBehaviour {
 	}
     private void Start()
     {
+        cam = Camera.main;
         lineRenderer = GetComponent<LineRenderer>();
         lineRenderer.positionCount = 2;
         lineRenderer.SetPosition(0, transform.position);
         lineRenderer.SetPosition(1, transform.position);
         lineRenderer.sortingLayerName = GetComponent<SpriteRenderer>().sortingLayerName;
         lineRenderer.enabled = false;
+
+        
+        arcRenderer = gameObject.transform.GetChild(1).GetComponent<LineRenderer>();
+        arcRenderer.sortingLayerName = lineRenderer.sortingLayerName;
+        arcRenderer.positionCount = 2;
+        arcRenderer.SetPosition(0, transform.position);
+        arcRenderer.SetPosition(1, transform.position);
+        arcRenderer.gameObject.SetActive(false);
     }
 
     // Update is called once per frame
@@ -328,7 +340,8 @@ public class AlunoController : MonoBehaviour {
         if (animator.GetBool("temCola"))
         {
             draggin = true;
-            Debug.Log("Clicou em mim");
+            arcRenderer.gameObject.SetActive(true);
+            //Debug.Log("Clicou em mim");
             touchOrigin = transform.position;
             lineRenderer.SetPosition(1, touchOrigin);
             lineRenderer.enabled = true;
@@ -337,31 +350,40 @@ public class AlunoController : MonoBehaviour {
     private void OnMouseUp()
     {
         draggin = false;
-        Debug.Log("Me soltou");
-        touchEnd = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        //Debug.Log("Me soltou");
+        touchEnd = cam.ScreenToWorldPoint(Input.mousePosition);
         lineRenderer.SetPosition(1, transform.position);
-        
         lineRenderer.enabled = false;
+        arcRenderer.SetPosition(1, transform.position);
+        arcRenderer.gameObject.SetActive(false);
     }
     private void OnMouseDrag()
     {
         if (animator.GetBool("temCola"))
         {
-            Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 mousePosition = cam.ScreenToWorldPoint(Input.mousePosition);
             Vector2 direction = mousePosition - touchOrigin;
-            
-            if (direction.magnitude < maxDragging)
-            {
-                lineRenderer.SetPosition(1, Camera.main.ScreenToWorldPoint(Input.mousePosition));
-            }
-            else
-            {   
-                direction.Set( direction.x / direction.magnitude, direction.y / direction.magnitude);//Vetor unitário
-                direction *= maxDragging;//vetor de tamanho 3 a partir da origem
-                direction.Set(direction.x + transform.position.x, direction.y + transform.position.y);//vetor transladado
-                lineRenderer.SetPosition(1, direction);
-            }
-            Debug.Log("Me arrastandooo");
+            float magnitude = direction.magnitude;
+            direction = direction.normalized;//Vetor unitário, a partir da origem, na direção de interesse
+            direction *= (magnitude < maxDragging) ? magnitude : maxDragging ;//vetor de tamanho maxDragging a partir da origem
+
+            direction.Set(direction.x + transform.position.x, direction.y + transform.position.y);//vetor transladado para posição correta
+            lineRenderer.SetPosition(1, direction);
+
+            DrawArc(direction);
+            //Debug.Log("Me arrastandooo");
+        }
+    }
+    private void DrawArc(Vector2 direction)
+    {
+        for (int i = 1; i < arcRenderer.positionCount; i++)
+        {
+            Vector2 difference = new Vector2(transform.position.x - direction.x, transform.position.y - direction.y);
+            float magnitude = difference.magnitude;
+            difference = difference.normalized * maxDistance * (magnitude/maxDragging); //direction.magnitude/maxDragging <= 1
+            Vector2 destination = new Vector2(transform.position.x + difference.x,  transform.position.y + difference.y);
+            Debug.Log("direction: " + direction + "| transform.position: " + transform.position + "| destination:  " + destination);
+            arcRenderer.SetPosition(i, destination);
         }
     }
 }
