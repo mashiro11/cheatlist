@@ -86,6 +86,8 @@ public class AlunoController : MonoBehaviour {
         arcRenderer.SetPosition(0, transform.position);
         arcRenderer.SetPosition(1, transform.position);
         arcRenderer.gameObject.SetActive(false);
+
+        gameObject.transform.GetChild(2).GetComponent<SpriteRenderer>().sortingLayerName = arcRenderer.sortingLayerName;
     }
 
     // Update is called once per frame

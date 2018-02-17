@@ -7,6 +7,7 @@ public class ProfessorIA : MonoBehaviour {
     public Vector2 startingPoint = new Vector2(1, 3);
     public float speed = 3f;
     public float waitTime = 4f;
+    public float distanceToTables;
     private Vector2 destination;//Diz qual posição da matriz positions o professor deve ir
 
     private List<List<Vector2>> positions = new List<List<Vector2>>();
@@ -45,7 +46,7 @@ public class ProfessorIA : MonoBehaviour {
             for (int j = 0; j < maxColunas + 1; j++)
             {
                 Vector2 position = new Vector2(alSpawner.initialX + j * alSpawner.espacamentoX, alSpawner.initialY + i * alSpawner.espacamentoY);
-                AddPonto(new Vector2(position.x - ((j == 0) ? 1.3f : ((j == maxColunas) ? 2.7f : 2f)), position.y + 1f));
+                AddPonto(new Vector2(position.x - ((j == 0) ? 1.3f : ((j == maxColunas) ? 2.7f : 2f)), position.y + distanceToTables));
                 //Debug.Log("Matriz de posicoes (" + i + ", " + j + "):" + positions.Count + ", " + positions[i].Count + " | " + positions[i][j]);
             }
         }
