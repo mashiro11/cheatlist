@@ -14,11 +14,20 @@ public class AlunoSpawner : MonoBehaviour {
     public int maxColunas = 5;
     public Vector2 inicial = new Vector2(1, 3);
     public GameObject cola;
-    private GameObject[] alunos = null;
-
+    private static GameObject[,] alunos = null;
+    private static int bustedCounter;
+    private static int finishedCounter;
+    public static int chances;
+    public static int minToWin;
+    
     //public ProfessorIA professorIA;
     private void Awake()
     {
+        chances = 5;
+        minToWin = 8;
+        alunos = new GameObject[maxLinhas,maxColunas];
+        bustedCounter = 0;
+        finishedCounter = 0;
         instance = this;
     }
 
@@ -33,6 +42,7 @@ public class AlunoSpawner : MonoBehaviour {
             {
                 Vector2 position = new Vector2(initialX + j * espacamentoX , initialY + i * espacamentoY);
                 al = ((GameObject)Instantiate(aluno, position, Quaternion.identity));
+                alunos[i, j] = al;
                 
                 al.GetComponent<AlunoController>().position = new Vector2(i, j);
                 al.GetComponent<SpriteRenderer>().sortingLayerName = "Fileira" + i;
@@ -41,20 +51,18 @@ public class AlunoSpawner : MonoBehaviour {
                 {
                     al.GetComponent<AlunoController>().dedoDuro = true;
                     GameManager.contadorDeDedoDuro++;
-                    Debug.Log("adicionei, seu burro");
                 }
 
                 if (i == inicial.x && j == inicial.y)
                 {
                     al.GetComponent<AlunoController>().RecebeCola();
                     cola.transform.position = al.transform.position;
-                    cola.GetComponent<Cola>().shooter = al;
+                    cola.GetComponent<Cola>().shooter = al.GetComponent<AlunoController>();
                     
                     if (al.GetComponent<AlunoController>().dedoDuro)
                     {
                         al.GetComponent<AlunoController>().dedoDuro = false;
                         GameManager.contadorDeDedoDuro--;
-                        Debug.Log("chamei, seu burro");
                     }
                 }
             }
@@ -63,19 +71,26 @@ public class AlunoSpawner : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-
 		
 	}
 
-    public bool TodosTerminaram()
+    public static AlunoController GetAluno(int i, int j)
     {
-        for (int i=0; i < maxLinhas*maxColunas; i++)
+        return alunos[i,j].GetComponent<AlunoController>();
+    }
+    public static void OneMoreBusted()
+    {
+        if (++bustedCounter > chances)
         {
-            if (alunos[i].GetComponent<Animator>().GetFloat("tempoComCola") < 10)
-            {
-                return false;
-            }
+            GameManager.GameOver();
         }
-        return true;
+
+    }
+    public static void OneMoreFinished()
+    {
+        if (++finishedCounter > minToWin)
+        {
+            GameManager.GanhouJogo();
+        }
     }
 }

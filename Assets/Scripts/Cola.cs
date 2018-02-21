@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class Cola : MonoBehaviour {
 
-    public GameObject shooter = null;
-
+    public AlunoController shooter = null;
+    public AlunoController receiver = null;
+    private Rigidbody2D rBody;
 	// Use this for initialization
 	void Start () {
-		
+        rBody = GetComponent<Rigidbody2D>();
 	}
 	
 	// Update is called once per frame
@@ -30,5 +31,9 @@ public class Cola : MonoBehaviour {
                 this.transform.position = collider.transform.position;
             }
         }*/
+    }
+    public void SetVelocity(Vector2 velocity)
+    {
+        rBody.velocity = velocity;
     }
 }

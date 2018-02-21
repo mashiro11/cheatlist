@@ -12,8 +12,9 @@ public class GameManager : MonoBehaviour {
 
     public Text timerText;
     public float timer;
-    public int contadorDeAlunos;
     public static int contadorDeDedoDuro;
+    private static bool gameOver = false;
+    private static bool playerWins = false;
 
 
     // Use this for initialization
@@ -21,6 +22,8 @@ public class GameManager : MonoBehaviour {
         Screen.orientation = ScreenOrientation.Landscape;
         Instance = this;
         RestartLevel();
+        ganhouUI.SetActive(false);
+        perdeuUI.SetActive(false);
         Debug.Log("Alunos para acabar: " + (20 - contadorDeDedoDuro));
         Debug.Log("Alunos dedo duros: " + contadorDeDedoDuro);
     }
@@ -30,22 +33,24 @@ public class GameManager : MonoBehaviour {
 	void Update () {
         timer -= Time.deltaTime;
         timerText.text = Mathf.Round(timer).ToString();
-        if (timer <=0)
+        if (timer <=0 || gameOver)
         {
-            GameOver();
+            perdeuUI.SetActive(true);
+            Time.timeScale = 0f;
+            //GameOver();
         }
 
-        if (contadorDeAlunos >= 20 - contadorDeDedoDuro)
+        if (playerWins)
         {
             GameObject.Find("Camera").GetComponent<CameraController>().WinGame();
-            GanhouJogo();
+            ganhouUI.SetActive(true);
+            Time.timeScale = 0f;
         }
     }
 
-    public void GameOver()
+    public static void GameOver()
     {
-        perdeuUI.SetActive(true);
-        Time.timeScale = 0f;
+        gameOver = true;
     }
 
     IEnumerator WaitToLoad ()
@@ -53,21 +58,22 @@ public class GameManager : MonoBehaviour {
         yield return new WaitForSeconds(3f);
     }
 
-    public void GanhouJogo()
+    public static void GanhouJogo()
     {
-        ganhouUI.SetActive(true);
-        Time.timeScale = 0f;
+        playerWins = true;
     }
 
     public void PlayAgain ()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         Time.timeScale = 1f;
-        AlunoController.busted = false;
+        //AlunoController.busted = false;
         timer = 260f;
-        contadorDeAlunos = 0;
         contadorDeDedoDuro = 0;
-
+        ganhouUI.SetActive(false);
+        perdeuUI.SetActive(false);
+        playerWins = false;
+        gameOver = false;
     }
 
     public void ReturnToMenu()

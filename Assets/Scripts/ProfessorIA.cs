@@ -17,21 +17,25 @@ public class ProfessorIA : MonoBehaviour {
     private int maxColunas = 0;
     private Vector2 currentPoint = Vector2.zero;//Diz qual a posição da matriz positions o professor vai sair
     private Vector2 velocity = Vector2.zero;
-    private Rigidbody2D rBody = null;
+    //private Rigidbody2D rBody = null;
     private float delta = 0.3f;
     private float waitTimer;
     private bool professorStopped = true;
     private Animator animator;
     private bool facingLeft = true;
+    private SpriteRenderer shadow;
+    private SpriteRenderer professorSprite;
 
 
     // Use this for initialization
     void Start () {
+        professorSprite = GetComponent<SpriteRenderer>();
+        shadow = transform.GetChild(0).GetComponent<SpriteRenderer>();
         currentPoint = startingPoint;
-        destination = startingPoint;
-        GetComponent<SpriteRenderer>().sortingLayerName = "Fileira" + destination.x;
+        destination = Vector2.zero;
+        professorSprite.sortingLayerName = shadow.sortingLayerName = "Fileira" + currentPoint.x;
 
-        rBody = GetComponent<Rigidbody2D>();
+        //rBody = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         animator.SetFloat("waitTimer", waitTime);
         positions.Add(new List<Vector2>());
@@ -59,23 +63,32 @@ public class ProfessorIA : MonoBehaviour {
         if (animator.GetBool("professorStopped"))
         {
             animator.SetFloat("waitTimer", animator.GetFloat("waitTimer") - Time.deltaTime);
+            if(animator.GetFloat("waitTimer") < 0)
+            {
+                waitTimer = waitTime;
+                animator.SetBool("professorStopped", false);
+                if (animator.GetBool("foundCheat"))
+                {
+                    GenerateNearest(transform.position);
+                }
+            }
         }
         else
         {
-            if( !animator.GetBool("foundCheat") )
-                MoveProfessor();
+            if (animator.GetInteger("direction") == 0)
+            {
+                GenerateNextPosition();
+            }
+            MoveProfessor();
         }
 
         if(animator.GetFloat("waitTimer") <= 0)
         {
-            if (!animator.GetBool("foundCheat"))
+            animator.SetFloat("waitTimer", waitTime);
+            animator.SetBool("professorStopped", false);
+            if (animator.GetBool("foundCheat"))
             {
-                animator.SetFloat("waitTimer", waitTime);
-                animator.SetBool("professorStopped", false);
-            }
-            else
-            {
-                GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>().GameOver();
+                animator.SetBool("foundCheat", false);
             }
         }
     }
@@ -93,70 +106,59 @@ public class ProfessorIA : MonoBehaviour {
         //Instantiate(cola, ponto, Quaternion.identity);
     }
 
-    private void MoveProfessor()
+    private void GenerateNextPosition()
     {
-        //se o professor ja está na posicao que devia chegar
-        if ((Vector2)transform.position == positions[(int)destination.x][(int)destination.y])
+        if (Random.Range(1, 11) > 5f)
         {
-            while (destination == currentPoint)
-            {
-                if (Random.Range(1, 11) > 5f)
-                {
-                    //sorteia uma linha             //mantem a coluna
-                    destination.Set(Random.Range(0, maxLinhas), currentPoint.y);
-                    //Ajusta o vetor velocidade para chegar lá
-                    if (destination.x > currentPoint.x)
-                        velocity.Set(0, 1);
-                    else if (destination.x < currentPoint.x)
-                        velocity.Set(0, -1);
-                    animator.SetInteger("direction", ((velocity.y > 0) ? 3 : 4));
-                    GetComponent<SpriteRenderer>().sortingLayerName = "Fileira" + destination.x;
-                }
-                else
-                {                   //mantem a linha       //sorteia uma coluna
-                    destination.Set(currentPoint.x, Random.Range(0, maxColunas));
-                    if (destination.y > currentPoint.y)
-                    {
-                        velocity.Set(1, 0);
-                        animator.SetInteger("direction", 2);
-
-                    }
-                    else if (destination.y < currentPoint.y)
-                    {
-                        velocity.Set(-1, 0);
-                        animator.SetInteger("direction", 1);
-                    }
-                    if (facingLeft && velocity.x > 0)
-                        Flip();
-                    else if (!facingLeft && velocity.x < 0)
-                        Flip();
-                }
-            }
-            //Debug.Log("Destination: " + destination + ": " + positions[(int)destination.x][(int)destination.y]);
-            //Debug.Log(velocity);
-            rBody.velocity = velocity * speed;
-            waitTimer = waitTime;
+            //sorteia uma linha             //mantem a coluna
+            destination.Set(Random.Range(0, maxLinhas), currentPoint.y);
+            //Ajusta o vetor velocidade para chegar lá
+            if (destination.x > currentPoint.x)
+                velocity.Set(0, 1);
+            else if (destination.x < currentPoint.x)
+                velocity.Set(0, -1);
+            animator.SetInteger("direction", ((velocity.y > 0) ? 3 : 4));
+            professorSprite.sortingLayerName = shadow.sortingLayerName = "Fileira" + destination.x;
         }
         else
-        {
-            //Se ainda não está no ponto sorteado, verificar se ja está bem proximo
-            if (transform.position.x > positions[(int)destination.x][(int)destination.y].x - delta &&
-                transform.position.x < positions[(int)destination.x][(int)destination.y].x + delta &&
-                transform.position.y > positions[(int)destination.x][(int)destination.y].y - delta &&
-                transform.position.y < positions[(int)destination.x][(int)destination.y].y + delta)
+        {                   //mantem a linha       //sorteia uma coluna
+            destination.Set(currentPoint.x, Random.Range(0, maxColunas) );
+            if (destination.y > currentPoint.y)
             {
-                //Se estiver, trunca a posição atual para o destino
-                transform.position = positions[(int)destination.x][(int)destination.y];
-                currentPoint = destination;
-                rBody.velocity = Vector2.zero;
-                animator.SetBool("professorStopped", true);
-                if (!facingLeft) Flip();
-                animator.SetInteger("direction", 0);
-            }
-            else
-            {
+                velocity.Set(1, 0);
+                animator.SetInteger("direction", 2);
 
             }
+            else if (destination.y < currentPoint.y)
+            {
+                velocity.Set(-1, 0);
+                animator.SetInteger("direction", 1);
+            }
+            if (facingLeft && velocity.x > 0)
+                Flip();
+            else if (!facingLeft && velocity.x < 0)
+                Flip();
+        }
+    }
+
+    private void MoveProfessor()
+    {
+        Vector2 position = transform.position;
+        position += velocity * speed * Time.deltaTime;
+        transform.position = position;
+        //Verificar se ja está junto
+        if (transform.position.x > positions[(int)destination.x][(int)destination.y].x - delta &&
+            transform.position.x < positions[(int)destination.x][(int)destination.y].x + delta &&
+            transform.position.y > positions[(int)destination.x][(int)destination.y].y - delta &&
+            transform.position.y < positions[(int)destination.x][(int)destination.y].y + delta)
+        {
+            //Se estiver, trunca a posição atual para o destino
+            transform.position = positions[(int)destination.x][(int)destination.y];
+            currentPoint = destination;
+            //rBody.velocity = Vector2.zero;
+            animator.SetBool("professorStopped", true);
+            if (!facingLeft) Flip();
+            animator.SetInteger("direction", 0);
         }
     }
     public void Flip()
@@ -172,17 +174,36 @@ public class ProfessorIA : MonoBehaviour {
         if (collider.gameObject.tag == "Cola")
         {
             //Debug.Log("Chamei no professor");
-            Catch(collider.gameObject.GetComponent<Cola>().shooter);
+            Catch(collider.gameObject.GetComponent<Cola>());
         }
     }
 
-    public void Catch(GameObject shooter)
+    public void Catch(Cola cola)
     {
         animator.SetBool("professorStopped", true);
         animator.SetBool("foundCheat", true);
-        GameObject.Find("Camera").GetComponent<CameraController>().EndGame();
-        rBody.velocity = Vector2.zero;
-        shooter.GetComponent<AlunoController>().Busted();
+        //rBody.velocity = Vector2.zero;
+
+        GameObject.Find("Camera").GetComponent<CameraController>().Busted();
+        if(cola.shooter) cola.shooter.Busted();
+        if(cola.receiver) cola.receiver.Busted();
+        GenerateNearest(cola.transform.position);
+    }
+
+    public void GenerateNearest(Vector2 position)
+    {
+        Vector2 nearest = Vector2.zero;
+        for(int i = 0; i < maxLinhas; i++)
+        {
+            for(int j = 0; j < maxColunas; j++)
+            {
+                if ((positions[i][j] - position).magnitude < (positions[(int)nearest.x][(int)nearest.y] - position).magnitude)
+                {
+                    nearest.Set(i, j);
+                }
+            }
+        }
+        destination = nearest;
     }
 
 

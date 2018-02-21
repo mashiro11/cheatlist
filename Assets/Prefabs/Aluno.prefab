@@ -331,6 +331,7 @@ MonoBehaviour:
   animator: {fileID: 95480686549267218}
   anim: {fileID: 0}
   tipoAluno: 0
+  busted: 0
 --- !u!120 &120365239923037374
 LineRenderer:
   m_ObjectHideFlags: 1

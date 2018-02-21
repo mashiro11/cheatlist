@@ -37,7 +37,7 @@ public class HorizontalDetector : MonoBehaviour {
                 (professor.GetComponent<Animator>().GetInteger("direction") == 2 &&
                  collision.transform.position.x >= professor.transform.position.x)))
             {
-                professor.GetComponent<ProfessorIA>().Catch(collision.GetComponent<Cola>().shooter);
+                professor.GetComponent<ProfessorIA>().Catch(collision.GetComponent<Cola>());
             }
         }
     }
@@ -57,7 +57,7 @@ public class HorizontalDetector : MonoBehaviour {
                 (professor.GetComponent<Animator>().GetInteger("direction") == 2 &&
                  collision.transform.position.x >= professor.transform.position.x)))
             {
-                professor.GetComponent<ProfessorIA>().Catch(collision.GetComponent<Cola>().shooter);
+                professor.GetComponent<ProfessorIA>().Catch(collision.GetComponent<Cola>());
             }
         }
     }

@@ -34,7 +34,7 @@ public class FrontDetectorController : MonoBehaviour {
                  professor.GetComponent<Animator>().GetInteger("direction") == 0) && 
                  collision.transform.position.y <= professor.transform.position.y ))
             {
-                professor.GetComponent<ProfessorIA>().Catch(collision.GetComponent<Cola>().shooter);
+                professor.GetComponent<ProfessorIA>().Catch(collision.GetComponent<Cola>());
             }
 
             if  (((Mathf.Abs(collision.transform.position.y - professor.transform.position.y) < distanciaDaCola )))
