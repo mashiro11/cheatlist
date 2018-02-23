@@ -4,13 +4,16 @@ using UnityEngine;
 
 public class FrontDetectorController : MonoBehaviour {
 
-    private GameObject professor;
+    private ProfessorIA professor;
+    private Animator professorAnimator;
     public bool colaNasCostas;
     public float distanciaDaCola;
     // Use this for initialization
 	void Start () {
-        professor = GameObject.FindGameObjectWithTag("Professor");
-	}
+        professor = GameObject.FindGameObjectWithTag("Professor").GetComponent<ProfessorIA>();
+        professorAnimator = professor.GetComponentInChildren<Animator>();
+
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -27,14 +30,14 @@ public class FrontDetectorController : MonoBehaviour {
         if (collision.tag.Equals("Cola"))
         {
             Debug.Log("Chamei no filho");
-            if( (professor.GetComponent<Animator>().GetInteger("direction") == 3 &&
+            if( (professorAnimator.GetInteger("direction") == 3 &&
                 collision.transform.position.y >= professor.transform.position.y) 
                 ||
-                ((professor.GetComponent<Animator>().GetInteger("direction") == 4 ||
-                 professor.GetComponent<Animator>().GetInteger("direction") == 0) && 
+                ((professorAnimator.GetInteger("direction") == 4 ||
+                 professorAnimator.GetInteger("direction") == 0) && 
                  collision.transform.position.y <= professor.transform.position.y ))
             {
-                professor.GetComponent<ProfessorIA>().Catch(collision.GetComponent<Cola>());
+                professor.Catch(collision.GetComponent<Cola>());
             }
 
             if  (((Mathf.Abs(collision.transform.position.y - professor.transform.position.y) < distanciaDaCola )))

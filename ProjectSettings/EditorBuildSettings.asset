@@ -8,6 +8,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Menu.unity
     guid: 172b77acf5376f042ae01027a6f55a8c
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Main.unity
     guid: 0ce2304ac6ab4be48b36c21f5f24892f
+  - enabled: 1
+    path: Assets/MashiroScenes/Main2.unity
+    guid: f1c4152c7ffbaa549a15751ae4d9ffb8

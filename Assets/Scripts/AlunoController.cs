@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 public class AlunoController : MonoBehaviour {
 
-    public Cola cola;
     public GameObject progressoCola;
     
     public AudioClip[] sounds;
@@ -52,13 +51,13 @@ public class AlunoController : MonoBehaviour {
     private LineRenderer lineRenderer;
     private LineRenderer arcRenderer;
     private Camera cam;
+    private string debugTag;
 
 	// Use this for initialization
 	void Awake () {
         tipoAluno = Random.Range(0,2);
         if(tipoAluno == 2) tipoAluno = 1;
         
-        cola = GameObject.FindGameObjectWithTag("Cola").GetComponent<Cola>();
         aSource = GetComponent<AudioSource>();
         /*
          *  Selecionando as animacoes 
@@ -71,7 +70,15 @@ public class AlunoController : MonoBehaviour {
 	}
     private void Start()
     {
-        cam = Camera.main;
+
+        if(Camera.main != null)
+        {
+            cam = Camera.main;
+        }
+        else
+        {
+            Debug.Log(debugTag + "Vai dar ruim");
+        }
         lineRenderer = GetComponent<LineRenderer>();
         lineRenderer.positionCount = 2;
         lineRenderer.SetPosition(0, transform.position);
@@ -88,6 +95,7 @@ public class AlunoController : MonoBehaviour {
         arcRenderer.gameObject.SetActive(false);
 
         gameObject.transform.GetChild(2).GetComponent<SpriteRenderer>().sortingLayerName = arcRenderer.sortingLayerName;
+        debugTag = "[Aluno " + position + "]: ";
     }
 
     // Update is called once per frame
@@ -123,7 +131,10 @@ public class AlunoController : MonoBehaviour {
                     tempoMinimo <= 0 &&
                     CanThrow(direction))
                 {
-                        PassaCola(direction);
+                    //direction.y indica a direção vertical do arremesso;
+                    //arremessos verticais alteram a linha que a cola está;
+                    Cola.SetReceiver(AlunoSpawner.GetAluno((int)(position.x + direction.y), (int)(position.y + direction.x)));
+                    PassaCola(direction);
                 }
             }
         }
@@ -131,7 +142,7 @@ public class AlunoController : MonoBehaviour {
 
     public void PassaCola(Vector2 direction)
     {
-        Debug.Log("Sou " + position + " e vou passar a cola para " + new Vector2(position.x+direction.y,position.y+direction.x));
+        Debug.Log(debugTag + "vou passar a cola para " + new Vector2(position.x+direction.y,position.y+direction.x));
 		Vector2 velocity = direction * velocidadeCola;
         //Debug.Log(position.x + ", " + position.y);
         if (velocity.x < 0) {
@@ -148,14 +159,11 @@ public class AlunoController : MonoBehaviour {
 
 
         animator.SetTrigger("passandoACola");
-        cola.SetVelocity(velocity);
+        Cola.SetVelocity(velocity);
         animator.SetBool("temCola", false);
         aSource.Play();
         progressoCola.SetActive(false);
-                                                        //direction.y indica a direção vertical do arremesso;
-                                                        //arremessos verticais alteram a linha que a cola está;
-        cola.receiver = AlunoSpawner.GetAluno((int)(position.x + direction.y), (int)(position.y + direction.x));
-
+        
         FindObjectOfType<FrontDetectorController>().colaNasCostas = false;
     }
 
@@ -191,37 +199,26 @@ public class AlunoController : MonoBehaviour {
         animator.SetBool("temCola", true);
         tempoMinimo = tempoMinimoDefinido;
         progressoCola.SetActive(true);
-        cola.shooter = this;
-        cola.receiver = null;
-        cola.SetVelocity(Vector2.zero);
-        cola.transform.position = this.transform.position;
+        Cola.SetShooter(this);
+        Cola.SetReceiver(null);
+        Cola.SetVelocity(new Vector2(0,0));
+        Cola.SetPosition(this.transform.position);
     }
 
     public void Busted()
     {
-        if(cola.receiver == this ||
-            cola.shooter == this && cola.receiver == null)
+        if (Cola.GetReceiver() == this)
         {
             RecebeCola();
-            Vector2 direction = new Vector2(0, -1);
-            if (!CanThrow(direction))
-            {
-                direction.Set(0, 1);
-                if (!CanThrow(direction))
-                {
-                    direction.Set(-1, 0);
-                    if (!CanThrow(direction))
-                    {
-                        direction.Set(1, 0);
-                        if (!CanThrow(direction))
-                        {
-                            GameManager.GameOver();
-                        }
-                    }
-                }
-            }
-            PassaCola(direction);
         }
+        
+        Vector2 direction = FindAvailabe();
+        if (direction.magnitude == Vector2.zero.magnitude)
+        {
+            GameManager.GameOver();
+        }
+        PassaCola( direction );
+        
         AlunoSpawner.OneMoreBusted();
         busted = true;
         tempoMinimo = 0;
@@ -229,6 +226,29 @@ public class AlunoController : MonoBehaviour {
         aSource.clip = sounds[1];
         aSource.Play();
         animator.SetTrigger("busted");
+    }
+
+    private Vector2 FindAvailabe()
+    {
+        Vector2 direction = new Vector2(0, -1);
+        if (!CanThrow(direction))
+        {
+            direction.Set(0, 1);
+            if (!CanThrow(direction))
+            {
+                direction.Set(-1, 0);
+                if (!CanThrow(direction))
+                {
+                    direction.Set(1, 0);
+                    if (!CanThrow(direction))
+                    {
+                        direction.Set(0, 0);
+                    }
+                }
+            }
+        }
+        Debug.Log(debugTag+ "Direction available!");
+        return direction;
     }
 
     public void Flip()
@@ -243,8 +263,7 @@ public class AlunoController : MonoBehaviour {
     {
         if (collider.gameObject.tag == "Cola")
         {
-            AlunoController shooter = collider.gameObject.GetComponent<Cola>().shooter;
-            if (shooter != this)
+            if (Cola.GetShooter() != this)
             {
                 RecebeCola();
             }
@@ -261,8 +280,7 @@ public class AlunoController : MonoBehaviour {
         bool baixo = direction.y == -1;
         bool esquerda = direction.x == -1;
         bool direita = direction.x == 1;
-        Debug.Log("direction: " + direction);
-
+        
         if (position.x == 0)
         {
             //Debug.Log("Sou de baixo, pode ir pra cima");

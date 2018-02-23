@@ -4,12 +4,18 @@ using UnityEngine;
 
 public class Cola : MonoBehaviour {
 
-    public AlunoController shooter = null;
-    public AlunoController receiver = null;
-    private Rigidbody2D rBody;
-	// Use this for initialization
-	void Start () {
+    private static AlunoController shooter = null;
+    private static AlunoController receiver = null;
+    private static Rigidbody2D rBody;
+    private static Cola instance;
+    // Use this for initialization
+    private void Awake()
+    {
         rBody = GetComponent<Rigidbody2D>();
+        instance = GameObject.FindGameObjectWithTag("Cola").GetComponent<Cola>();
+    }
+    void Start () {
+        
 	}
 	
 	// Update is called once per frame
@@ -19,21 +25,30 @@ public class Cola : MonoBehaviour {
 
     public void OnTriggerEnter(Collider collider)
     {
-        /*
-        if (collider.gameObject.tag == "Aluno")
-        {
-            if (shooter != collider.gameObject)
-            {
-                shooter.GetComponent<AlunoController>().shoot = false;
-                collider.gameObject.GetComponent<AlunoController>().RecebeCola();
-                //Destroy(this.gameObject);
-                GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
-                this.transform.position = collider.transform.position;
-            }
-        }*/
+
     }
-    public void SetVelocity(Vector2 velocity)
+    public static void SetVelocity(Vector2 velocity)
     {
         rBody.velocity = velocity;
+    }
+    public static void SetPosition(Vector2 position)
+    {
+        instance.transform.position = position;
+    }
+    public static void SetShooter(AlunoController aluno)
+    {
+        shooter = aluno;
+    }
+    public static void SetReceiver(AlunoController aluno)
+    {
+        receiver = aluno;
+    }
+    public static AlunoController GetShooter()
+    {
+        return shooter;
+    }
+    public static AlunoController GetReceiver()
+    {
+        return receiver;
     }
 }

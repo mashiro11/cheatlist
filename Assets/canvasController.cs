@@ -8,7 +8,7 @@ public class canvasController : MonoBehaviour {
 
     public Text tutorText;
     public GameObject tutorialUI;
-
+    public GameObject timerPanel;
     private void Awake()
     {
         Time.timeScale = 0f;
@@ -22,6 +22,8 @@ public class canvasController : MonoBehaviour {
     {
         Time.timeScale = 1f;
         tutorialUI.SetActive(false);
+        timerPanel.SetActive(true);
+
     }
 
     // Use this for initialization

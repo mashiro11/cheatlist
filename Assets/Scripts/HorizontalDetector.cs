@@ -5,10 +5,13 @@ using UnityEngine;
 public class HorizontalDetector : MonoBehaviour {
 
     private GameObject professor;
+    private Animator professorAnimator;
+
     // Use this for initialization
     void Start()
     {
         professor = GameObject.FindGameObjectWithTag("Professor");
+        professorAnimator = professor.GetComponentInChildren<Animator>();
     }
 
     // Update is called once per frame
@@ -31,10 +34,10 @@ public class HorizontalDetector : MonoBehaviour {
             //Debug.Log("cola|prof: " + collision.transform.position + " | " + professor.transform.position);
 
             if (collision.GetComponent<Rigidbody2D>().velocity.magnitude > 0 &&
-                ((professor.GetComponent<Animator>().GetInteger("direction") == 1 &&
+                ((professorAnimator.GetInteger("direction") == 1 &&
                 collision.transform.position.x <= professor.transform.position.x)
                 ||
-                (professor.GetComponent<Animator>().GetInteger("direction") == 2 &&
+                (professorAnimator.GetInteger("direction") == 2 &&
                  collision.transform.position.x >= professor.transform.position.x)))
             {
                 professor.GetComponent<ProfessorIA>().Catch(collision.GetComponent<Cola>());
@@ -51,10 +54,10 @@ public class HorizontalDetector : MonoBehaviour {
             //Debug.Log("cola|prof: " + collision.transform.position + " | " + professor.transform.position);
 
             if (collision.GetComponent<Rigidbody2D>().velocity.magnitude > 0 &&
-                ((professor.GetComponent<Animator>().GetInteger("direction") == 1 &&
+                ((professorAnimator.GetInteger("direction") == 1 &&
                 collision.transform.position.x <= professor.transform.position.x)
                 ||
-                (professor.GetComponent<Animator>().GetInteger("direction") == 2 &&
+                (professorAnimator.GetInteger("direction") == 2 &&
                  collision.transform.position.x >= professor.transform.position.x)))
             {
                 professor.GetComponent<ProfessorIA>().Catch(collision.GetComponent<Cola>());

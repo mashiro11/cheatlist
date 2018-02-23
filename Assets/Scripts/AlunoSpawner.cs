@@ -13,12 +13,12 @@ public class AlunoSpawner : MonoBehaviour {
     public int maxLinhas = 4;
     public int maxColunas = 5;
     public Vector2 inicial = new Vector2(1, 3);
-    public GameObject cola;
     private static GameObject[,] alunos = null;
     private static int bustedCounter;
     private static int finishedCounter;
     public static int chances;
     public static int minToWin;
+    private static string debugTag = "[AlunoSpawner]: ";
     
     //public ProfessorIA professorIA;
     private void Awake()
@@ -35,8 +35,9 @@ public class AlunoSpawner : MonoBehaviour {
     void Start () {
         temCola = false;
         GameObject al;
-        cola.transform.position = this.transform.position;
-        
+        Instantiate(Resources.Load("Cola"), transform.position, Quaternion.identity );
+        Cola.SetPosition(transform.position);
+
         for(int i = 0; i < maxLinhas; i++){
             for (int j = 0; j < maxColunas; j++)
             {
@@ -56,8 +57,7 @@ public class AlunoSpawner : MonoBehaviour {
                 if (i == inicial.x && j == inicial.y)
                 {
                     al.GetComponent<AlunoController>().RecebeCola();
-                    cola.transform.position = al.transform.position;
-                    cola.GetComponent<Cola>().shooter = al.GetComponent<AlunoController>();
+                    Cola.SetShooter( al.GetComponent<AlunoController>() );
                     
                     if (al.GetComponent<AlunoController>().dedoDuro)
                     {
@@ -80,6 +80,7 @@ public class AlunoSpawner : MonoBehaviour {
     }
     public static void OneMoreBusted()
     {
+        Debug.Log("Busted: " + bustedCounter + "| Chances: " + chances);
         if (++bustedCounter > chances)
         {
             GameManager.GameOver();
@@ -93,4 +94,11 @@ public class AlunoSpawner : MonoBehaviour {
             GameManager.GanhouJogo();
         }
     }
+    public void ResetParameters()
+    {
+        chances = 5;
+        minToWin = 8;
+        bustedCounter = 0;
+        finishedCounter = 0;
+    } 
 }
