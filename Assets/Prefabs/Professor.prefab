@@ -54,10 +54,9 @@ GameObject:
   - component: {fileID: 4665288884975668}
   - component: {fileID: 212248405629604612}
   - component: {fileID: 95239194232011802}
-  - component: {fileID: 61203835822025236}
   m_Layer: 0
   m_Name: ProfessorMacaco
-  m_TagString: Professor
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -106,9 +105,9 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.8, y: 0.8, z: 1}
   m_Children:
+  - {fileID: 4665288884975668}
   - {fileID: 4688471678519310}
   - {fileID: 4169599866825428}
-  - {fileID: 4665288884975668}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -123,7 +122,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4006511125398192}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4337058817243342
 Transform:
@@ -145,12 +144,12 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1622727893030866}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4337058817243342}
   m_Father: {fileID: 4006511125398192}
-  m_RootOrder: 2
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4688471678519310
 Transform:
@@ -163,7 +162,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4006511125398192}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &61007674790829136
 BoxCollider2D:
@@ -171,31 +170,6 @@ BoxCollider2D:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1877219187589802}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -1.08}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 2.54, y: 4.4866667}
-    newSize: {x: 2.54, y: 4.4866667}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 6.39, y: 2.14}
-  m_EdgeRadius: 0
---- !u!61 &61203835822025236
-BoxCollider2D:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1622727893030866}
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
@@ -310,7 +284,7 @@ MonoBehaviour:
   startingPoint: {x: 3, y: 1}
   speed: 3
   waitTime: 4
-  distanceToTables: 1.5
+  distanceToTables: 1
 --- !u!114 &114660597768655250
 MonoBehaviour:
   m_ObjectHideFlags: 1

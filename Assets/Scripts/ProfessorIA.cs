@@ -25,6 +25,11 @@ public class ProfessorIA : MonoBehaviour {
     private SpriteRenderer shadow;
     private SpriteRenderer professorSprite;
     private AudioListener listener;
+    private int toGetCloser = 3;
+    private int toGetCloserCounter = 1;
+    private int getCloserTimes = 4;
+    private int getCloserTimesCounter = 1;
+
 
     private GameObject destinationKnob;
     private string debugTag;
@@ -46,16 +51,15 @@ public class ProfessorIA : MonoBehaviour {
         animator.SetFloat("waitTimer", waitTime);
 
         positions.Add(new List<Vector2>());
-        AlunoSpawner alSpawner = GameObject.FindGameObjectWithTag("AlunoSpawner").GetComponent<AlunoSpawner>();
-        maxColunas = alSpawner.maxColunas;  
-        maxLinhas = alSpawner.maxLinhas;
+        maxColunas = AlunoController.maxColunas;  
+        maxLinhas = AlunoController.maxLinhas;
         
         
         for(int i = 0; i < maxLinhas; i++)
         {
             for (int j = 0; j < maxColunas + 1; j++)
             {
-                Vector2 position = new Vector2(alSpawner.initialX + j * alSpawner.espacamentoX, alSpawner.initialY + i * alSpawner.espacamentoY);
+                Vector2 position = new Vector2(AlunoController.initialX + j * AlunoController.espacamentoX, AlunoController.initialY + i * AlunoController.espacamentoY);
                 AddPonto(new Vector2(position.x - ((j == 0) ? 1.3f : ((j == maxColunas) ? 2.7f : 2f)), position.y + distanceToTables));
                 //Debug.Log("Matriz de posicoes (" + i + ", " + j + "):" + positions.Count + ", " + positions[i].Count + " | " + positions[i][j]);
             }
@@ -69,11 +73,27 @@ public class ProfessorIA : MonoBehaviour {
         
         if (animator.GetBool("professorStopped"))
         {
-            animator.SetFloat("waitTimer", animator.GetFloat("waitTimer") - Time.deltaTime);
-            if(animator.GetFloat("waitTimer") < 0)
+            if (animator.GetBool("foundCheat"))
             {
-                waitTimer = waitTime;
-                animator.SetBool("professorStopped", false);
+                if (animator.GetFloat("foundCheatTimer") < 0)
+                {
+                    animator.SetBool("professorStopped", false);
+                    animator.SetFloat("waitTimer", -1);
+                    animator.SetBool("foundCheat", false);
+                }
+                else
+                {
+                    animator.SetFloat("foundCheatTimer", animator.GetFloat("foundCheatTimer") - Time.deltaTime);
+                }
+            }
+            else
+            {
+                animator.SetFloat("waitTimer", animator.GetFloat("waitTimer") - Time.deltaTime);
+                if (animator.GetFloat("waitTimer") < 0)
+                {
+                    waitTimer = waitTime;
+                    animator.SetBool("professorStopped", false);
+                }
             }
         }
         else
@@ -90,10 +110,6 @@ public class ProfessorIA : MonoBehaviour {
         {
             animator.SetFloat("waitTimer", waitTime);
             animator.SetBool("professorStopped", false);
-            if (animator.GetBool("foundCheat"))
-            {
-                animator.SetBool("foundCheat", false);
-            }
         }
     }
     public void AddPonto(Vector2 ponto)
@@ -112,17 +128,91 @@ public class ProfessorIA : MonoBehaviour {
 
     private void GenerateNextPosition()
     {
-        if (Random.Range(1, 11) > 5f)
+        if (toGetCloserCounter == toGetCloser)//quantas posições aleatorias ja foram para começar posições de perseguição
         {
-            //sorteia uma linha             //mantem a coluna
-            destination.Set(Random.Range(0, maxLinhas), currentPoint.y);
+            Debug.Log(debugTag + "Perseguindo!");
+            if (getCloserTimesCounter < getCloserTimes)//quantas posições de perseguição ja foram
+            {
+                Debug.Log(debugTag + getCloserTimesCounter + "a vez");
+                if(getCloserTimesCounter++ == 1) waitTime /= 2;
+                GenerateNearest(Cola.GetPosition());
+            }
+            else
+            {
+                Debug.Log(debugTag + "Terminou essa perseguicao");
+                getCloserTimesCounter = 1;
+                toGetCloserCounter = 1;
+                waitTime *= 2;
+            }
         }
         else
-        {                   //mantem a linha       //sorteia uma coluna
-            destination.Set(currentPoint.x, Random.Range(0, maxColunas) );
+        {
+            toGetCloserCounter++;
+            if (Random.Range(1, 11) > 5f)
+            {
+                //sorteia uma linha             //mantem a coluna
+                destination.Set(Random.Range(0, maxLinhas), currentPoint.y);
+            }
+            else
+            {                   //mantem a linha       //sorteia uma coluna
+                destination.Set(currentPoint.x, Random.Range(0, maxColunas));
+            }
+            destinationKnob.transform.position = positions[(int)destination.x][(int)destination.y];
         }
-        destinationKnob.transform.position = positions[(int)destination.x][(int)destination.y];
 
+    }
+
+    public void GenerateNearest(Vector2 position)
+    {
+        Vector2 temp = transform.position;
+        Vector2 lineOrColumn = temp - position;//obtenho um vetor com as distâncias em x e em y
+
+        //de inicio, chuto que o ponto mais próximo é onde estou
+        Vector2 nearest = new Vector2(currentPoint.x, currentPoint.y);
+        int max = 0;
+        int i = 0, j = 0;
+        unsafe
+        {
+            int* k;
+            //se a distância em y é maior, significa que o professor deve andar variando as linhas
+            if (Mathf.Abs(lineOrColumn.y) > Mathf.Abs(lineOrColumn.x))
+            {
+                Debug.Log(debugTag + " GetNearest(): k aponta i ");
+                max = maxLinhas;
+                k = &i;
+                j = (int)currentPoint.y;
+            }
+            else
+            {
+                Debug.Log(debugTag + " GetNearest(): k aponta j ");
+                max = maxColunas;
+                k = &j;
+                i = (int)currentPoint.x;
+            }
+
+            for (; *k < max; (*k)++)
+            {
+                Debug.Log(debugTag + "positions[" + i + ", " + j + "]: " + positions[i][j]);
+                try
+                {
+                    if ((positions[i][j] - position).magnitude < (positions[(int)nearest.x][(int)nearest.y] - position).magnitude)
+                    {
+                        Debug.Log(debugTag + "selecionado");
+                        nearest.Set(i, j);
+                    }
+                }
+                catch (System.ArgumentOutOfRangeException e)
+                {
+                    Debug.Log(debugTag + "Tentando acessar: [" + i + "][" + j + "]");
+                }
+            }
+        }
+        destination = nearest;
+        destinationKnob.transform.position = positions[(int)destination.x][(int)destination.y];
+        Debug.Log(debugTag + "Entry Position: " + position);
+        Debug.Log(debugTag + "Nearest position: " + destination + 
+            " : (" + positions[(int)destination.x][(int)destination.y].x + "," + 
+                  positions[(int)destination.x][(int)destination.y].y + ")");
     }
 
     private void SetDirection()
@@ -214,6 +304,7 @@ public class ProfessorIA : MonoBehaviour {
     {
         animator.SetBool("professorStopped", true);
         animator.SetBool("foundCheat", true);
+        animator.SetFloat("foundCheatTimer", waitTime);
 
         GameManager.Instance.Busted();
 
@@ -226,50 +317,4 @@ public class ProfessorIA : MonoBehaviour {
         if(Cola.GetShooter()) Cola.GetShooter().Busted();
         if(Cola.GetReceiver()) Cola.GetReceiver().Busted();
     }
-
-    public void GenerateNearest(Vector2 position)
-    {
-        Vector2 temp = transform.position;
-        Vector2 lineOrColumn = temp - position;
-        
-        Vector2 nearest = new Vector2(currentPoint.x, currentPoint.y);
-        int max = 0;
-        int i = 0, j = 0;
-        unsafe
-        {
-            int* k;
-            if (lineOrColumn.x > lineOrColumn.y)
-            {
-                max = maxColunas;
-                k = &i;
-                j = (int)currentPoint.y;
-            }
-            else
-            {
-                max = maxLinhas;
-                k = &j;
-                i = (int)currentPoint.x;
-            }
-
-            for (; *k < max; (*k)++)
-            {
-                try
-                {
-                    if ((positions[i][j] - position).magnitude < (positions[(int)nearest.x][(int)nearest.y] - position).magnitude)
-                    {
-                        nearest.Set(i, j);
-                    }
-                }
-                catch(System.ArgumentOutOfRangeException e)
-                {
-                    Debug.Log("Tentando acessar: [" + i + "][" + j + "]");
-                }
-            }
-        }
-        destination = nearest;
-        destinationKnob.transform.position = positions[(int)destination.x][(int)destination.y];
-        Debug.Log(debugTag + "Nearest position: " + destination );
-    }
-
-
 }

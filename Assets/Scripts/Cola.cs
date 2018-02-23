@@ -51,4 +51,8 @@ public class Cola : MonoBehaviour {
     {
         return receiver;
     }
+    public static Vector3 GetPosition()
+    {
+        return instance.transform.position;
+    }
 }

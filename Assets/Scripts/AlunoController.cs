@@ -5,21 +5,33 @@ using UnityEngine.UI;
 
 public class AlunoController : MonoBehaviour {
 
+    /*
+     *      Variáveis estáticas
+     */
+    public static Object aluno;
+    public static float initialX = -8, initialY = -4.5f;
+    public static float espacamentoX = 4, espacamentoY = 2.1f;
+    public static int maxLinhas = 4;
+    public static int maxColunas = 5;
+    public static Vector2 inicial = new Vector2(1, 3); //posição de quem começa com a cola
+
+    private static GameObject[,] alunos = new GameObject[maxLinhas, maxColunas];
+    private static float[,] cheatProgress = new float[maxLinhas, maxColunas];
+
+    private static int bustedCounter = 0;
+    private static int finishedCounter = 0;
+    private static int chances = 5;
+    private static int minToWin = 10;
+
+    private static bool stopControls = false;
+    
+
+
     public GameObject progressoCola;
     
     public AudioClip[] sounds;
     float colaRapida = 1;
     public bool dedoDuro;
-
-    public AnimationClip[] animIdle;
-    public AnimationClip[] animTran;
-    public AnimationClip[] animPassaDir;
-    public AnimationClip[] animPassaEsq;
-    public AnimationClip[] animPassaFrente;
-    public AnimationClip[] animPassaTraz;
-    public AnimationClip[] animColando;
-    AnimatorOverrideController aoc;
-    private bool changed;
 
     public int velocidadeCola;
     [HideInInspector]
@@ -29,7 +41,7 @@ public class AlunoController : MonoBehaviour {
     public float maxDragging;
     public float maxDistance;
 
-//#if UNITY_IOS || UNITY_IPHONE || UNITY_ANDROID
+    //#if UNITY_IOS || UNITY_IPHONE || UNITY_ANDROID
     public Vector2 touchOrigin = new Vector2(-1, -1);
     public Vector2 touchEnd = new Vector2(-1, -1);
     bool clicked = false;
@@ -40,7 +52,7 @@ public class AlunoController : MonoBehaviour {
 
     float tempoMinimo;
     public float tempoMinimoDefinido;
-    public float tempoNecessario;
+    public static float tempoNecessario = 10;
 
     public Sprite[] sprites;
     public Animator animator;
@@ -52,19 +64,14 @@ public class AlunoController : MonoBehaviour {
     private LineRenderer arcRenderer;
     private Camera cam;
     private string debugTag;
-
-	// Use this for initialization
-	void Awake () {
+    
+    // Use this for initialization
+    void Awake () {
         tipoAluno = Random.Range(0,2);
         if(tipoAluno == 2) tipoAluno = 1;
         
         aSource = GetComponent<AudioSource>();
-        /*
-         *  Selecionando as animacoes 
-         */
         animator = GetComponent<Animator>();
-        aoc = new AnimatorOverrideController(animator.runtimeAnimatorController);
-        animator.runtimeAnimatorController = aoc;
         
         animator.SetBool("temCola", false);
 	}
@@ -100,41 +107,32 @@ public class AlunoController : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        if (!changed)
+        if (!stopControls)
         {
-            changed = true;
-            aoc["IDLE"] = animIdle[tipoAluno];
-            aoc["TRANQUILO"] = animTran[tipoAluno];
-            aoc["PASSADIR"] = animPassaDir[tipoAluno];
-            aoc["PASSAESQ"] = animPassaEsq[tipoAluno];
-            //aoc["COLANDO"] = animColando[tipoAluno];
-            //aoc["PASSAFRENTE"] = animPassaFrente[tipoAluno];
-            //aoc["PASSATRAZ"] = animPassaTraz[tipoAluno];
-
-        }
-        if (!busted && animator.GetBool("temCola"))
-        {
-            if (animator.GetFloat("tempoComCola") < tempoNecessario)
+            if (!busted && animator.GetBool("temCola"))
             {
-                MostraProgressoCola();
-            }
-            if (tempoMinimo > 0)
-            {
-                tempoMinimo -= Time.deltaTime;
-            }
-            if (!draggin)
-            {
-                //vai ser modificado.
-                Vector2 direction = GetInputDirection();
-                if (direction.magnitude != 0 &&
-                    animator.GetBool("temCola") &&
-                    tempoMinimo <= 0 &&
-                    CanThrow(direction))
+                if (animator.GetFloat("tempoComCola") < tempoNecessario)
                 {
-                    //direction.y indica a direção vertical do arremesso;
-                    //arremessos verticais alteram a linha que a cola está;
-                    Cola.SetReceiver(AlunoSpawner.GetAluno((int)(position.x + direction.y), (int)(position.y + direction.x)));
-                    PassaCola(direction);
+                    MostraProgressoCola();
+                }
+                if (tempoMinimo > 0)
+                {
+                    tempoMinimo -= Time.deltaTime;
+                }
+                if (!draggin)
+                {
+                    //vai ser modificado.
+                    Vector2 direction = GetInputDirection();
+                    if (direction.magnitude != 0 &&
+                        animator.GetBool("temCola") &&
+                        tempoMinimo <= 0 &&
+                        CanThrow(direction))
+                    {
+                        //direction.y indica a direção vertical do arremesso;
+                        //arremessos verticais alteram a linha que a cola está;
+                        Cola.SetReceiver(alunos[(int)(position.x + direction.y), (int)(position.y + direction.x)].GetComponent<AlunoController>());
+                        PassaCola(direction);
+                    }
                 }
             }
         }
@@ -142,7 +140,7 @@ public class AlunoController : MonoBehaviour {
 
     public void PassaCola(Vector2 direction)
     {
-        Debug.Log(debugTag + "vou passar a cola para " + new Vector2(position.x+direction.y,position.y+direction.x));
+        //Debug.Log(debugTag + "vou passar a cola para " + new Vector2(position.x+direction.y,position.y+direction.x));
 		Vector2 velocity = direction * velocidadeCola;
         //Debug.Log(position.x + ", " + position.y);
         if (velocity.x < 0) {
@@ -173,23 +171,31 @@ public class AlunoController : MonoBehaviour {
         {
             colaRapida = 2;
         }
-        animator.SetFloat("tempoComCola", animator.GetFloat("tempoComCola") + Time.deltaTime * colaRapida);
+        cheatProgress[(int)position.x,(int)position.y] += Time.deltaTime * colaRapida;
+        Mathf.Clamp(cheatProgress[(int)position.x, (int)position.y], 0, tempoNecessario);
+        float time = cheatProgress[(int)position.x, (int)position.y];
+
+        animator.SetFloat("tempoComCola", time);
         
-        if (animator.GetFloat("tempoComCola") > tempoNecessario/4 && animator.GetFloat("tempoComCola") < tempoNecessario/2)
+        if (time > tempoNecessario/4 && time < tempoNecessario/2)
         {
             progressoCola.GetComponent<SpriteRenderer>().sprite = sprites[1];
         }
-        if (animator.GetFloat("tempoComCola") > tempoNecessario/2 && animator.GetFloat("tempoComCola") < 3*tempoNecessario/4)
+        if (time > tempoNecessario/2 && time < 3*tempoNecessario/4)
         {
             progressoCola.GetComponent<SpriteRenderer>().sprite = sprites[2];
         }
-        if (animator.GetFloat("tempoComCola") > tempoNecessario)
+        if (time > tempoNecessario)
         {
             progressoCola.GetComponent<SpriteRenderer>().sprite = sprites[3];
             if (!terminou)
             {
                 terminou = true;
-                AlunoSpawner.OneMoreFinished();
+                if(++finishedCounter + bustedCounter == 20)
+                {
+                    GameManager.FimDeJogo();
+                }
+                
             }
         }
     } 
@@ -207,28 +213,48 @@ public class AlunoController : MonoBehaviour {
 
     public void Busted()
     {
-        if (Cola.GetReceiver() == this)
-        {
-            RecebeCola();
-        }
-        
-        Vector2 direction = FindAvailabe();
-        if (direction.magnitude == Vector2.zero.magnitude)
+        //Se chegou no limite de alunos que podem ser pegos, game over
+        //Debug.Log(debugTag + "Busted: " + bustedCounter + "| Chances: " + chances);
+        if (++bustedCounter > chances)
         {
             GameManager.GameOver();
         }
-        PassaCola( direction );
-        
-        AlunoSpawner.OneMoreBusted();
-        busted = true;
-        tempoMinimo = 0;
-        aSource.Stop();
-        aSource.clip = sounds[1];
-        aSource.Play();
-        animator.SetTrigger("busted");
+        else
+        {
+            //Se ainda estiver para receber a cola, 
+            //ja considera que recebeu (professor pega os dois)
+            if (Cola.GetReceiver() == this)
+            {
+                RecebeCola();
+            }
+
+            //tenta passar pra frente. Se não conseguir, game over
+            Vector2 direction = FindAvailable();
+            if (direction.magnitude == Vector2.zero.magnitude)
+            {
+                GameManager.GameOver();
+            }
+            PassaCola(direction);
+
+            //O que o aluno tinha de pontos não soma mais na média da turma
+            cheatProgress[(int)position.x, (int)position.y] = 0;
+            
+            //se ele tinha terminado, é desconsiderado
+            if (terminou)
+            {
+                --finishedCounter;
+            }
+
+            busted = true;
+            tempoMinimo = 0;
+            aSource.Stop();
+            aSource.clip = sounds[1];
+            aSource.Play();
+            animator.SetTrigger("busted");
+        }
     }
 
-    private Vector2 FindAvailabe()
+    private Vector2 FindAvailable()
     {
         Vector2 direction = new Vector2(0, -1);
         if (!CanThrow(direction))
@@ -247,7 +273,7 @@ public class AlunoController : MonoBehaviour {
                 }
             }
         }
-        Debug.Log(debugTag+ "Direction available!");
+        //Debug.Log(debugTag+ "Direction available!");
         return direction;
     }
 
@@ -315,7 +341,7 @@ public class AlunoController : MonoBehaviour {
 
         if (canThrow)
         {
-            AlunoController receiver = (AlunoSpawner.GetAluno((int)(position.x + direction.y), (int)(position.y + direction.x))).GetComponent<AlunoController>();
+            AlunoController receiver = alunos[(int)(position.x + direction.y),(int)(position.y + direction.x)].GetComponent<AlunoController>();
             if (receiver.busted)
             {
                 canThrow = false;
@@ -442,6 +468,78 @@ public class AlunoController : MonoBehaviour {
             Vector2 destination = new Vector2(transform.position.x + difference.x,  transform.position.y + difference.y);
             Debug.Log("direction: " + direction + "| transform.position: " + transform.position + "| destination:  " + destination);
             arcRenderer.SetPosition(i, destination);
+        }
+    }
+
+    public static void StopControls(bool stop)
+    {
+        stopControls = stop;
+    }
+
+    public static void ResetParameters()
+    {
+        chances = 5;
+        minToWin = 8;
+        bustedCounter = 0;
+        finishedCounter = 0;
+        stopControls = false;
+        for(int i = 0; i < maxLinhas; i++)
+        {
+            for(int j = 0; j < maxColunas; j++)
+            {
+                cheatProgress[i, j] = 0; 
+            }
+        }
+    }
+
+    public static float GetMean()
+    {
+        float sum = 0;
+        for(int i = 0; i < maxLinhas; i++)
+        {
+            for(int j = 0; j < maxColunas; j++)
+            {
+                sum += cheatProgress[i, j] / tempoNecessario * 10;
+            }
+        }
+        return sum/20;
+    }
+
+    public static void SpawnAlunos()
+    {
+        Instantiate(Resources.Load("Cola"), Vector2.zero, Quaternion.identity);
+        aluno = Resources.Load("Aluno");
+        GameObject al;
+
+        for (int i = 0; i < maxLinhas; i++)
+        {
+            for (int j = 0; j < maxColunas; j++)
+            {
+                Vector2 position = new Vector2(initialX + j * espacamentoX, initialY + i * espacamentoY);
+                al = ((GameObject)Instantiate(aluno, position, Quaternion.identity));
+                alunos[i, j] = al;
+
+                al.GetComponent<AlunoController>().position = new Vector2(i, j);
+                al.GetComponent<SpriteRenderer>().sortingLayerName = "Fileira" + i;
+                //Debug.Log(i + ", " + j);
+                if (Random.Range(1, 11) <= 1)
+                {
+                    al.GetComponent<AlunoController>().dedoDuro = true;
+                    GameManager.contadorDeDedoDuro++;
+                }
+
+                if (i == inicial.x && j == inicial.y)
+                {
+                    al.GetComponent<AlunoController>().RecebeCola();
+                    Cola.SetShooter(al.GetComponent<AlunoController>());
+
+                    if (al.GetComponent<AlunoController>().dedoDuro)
+                    {
+                        al.GetComponent<AlunoController>().dedoDuro = false;
+                        GameManager.contadorDeDedoDuro--;
+                    }
+                }
+            }
         }
     }
 }
