@@ -134,6 +134,7 @@ public class GameManager : MonoBehaviour {
     public void ReturnToMenu()
     {
         Time.timeScale = 1f;
+        PlayAgain();
         SceneManager.LoadScene("Menu");
         UnityEngine.Debug.Log(Time.timeScale);
     }

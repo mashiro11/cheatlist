@@ -54,6 +54,8 @@ public class HorizontalDetector : MonoBehaviour {
             //Debug.Log("cola|prof: " + collision.transform.position + " | " + professor.transform.position);
 
             if (collision.GetComponent<Rigidbody2D>().velocity.magnitude > 0 &&
+                !(collision.GetComponent<Rigidbody2D>().velocity.y < 0) &&
+                
                 ((professorAnimator.GetInteger("direction") == 1 &&
                 collision.transform.position.x <= professor.transform.position.x)
                 ||
