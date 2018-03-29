@@ -26,7 +26,7 @@ public class Slingshot : MonoBehaviour {
         lineRenderer.positionCount = 2;
         lineRenderer.SetPosition(0, parent.position);
         lineRenderer.SetPosition(1, parent.position);
-        lineRenderer.sortingLayerName = GetComponent<SpriteRenderer>().sortingLayerName;
+        //lineRenderer.sortingLayerName = GetComponent<SpriteRenderer>().sortingLayerName;
         lineRenderer.enabled = false;
 
         /*
