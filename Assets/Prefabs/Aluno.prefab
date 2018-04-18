@@ -323,6 +323,7 @@ MonoBehaviour:
   sounds:
   - {fileID: 8300000, guid: b8338be3119c30b4d8944f369a700f0a, type: 3}
   - {fileID: 8300000, guid: 07889479e3f30a849aad00d5e62ec333, type: 3}
+  - {fileID: 8300000, guid: 611960b4b0522bd46bfe0bd7dda95bf0, type: 3}
   dedoDuro: 0
   velocidadeCola: 15
   position: {x: 0, y: 0}

@@ -23,9 +23,15 @@ public class Cola : MonoBehaviour {
 		//oi
 	}
 
-    public void OnTriggerEnter(Collider collider)
+    public void OnTriggerEnter2D(Collider2D collider)
     {
-
+        if (collider.gameObject.CompareTag("Aluno") )
+        {
+            if (GetShooter() != this)
+            {
+                collider.GetComponent<AlunoController>().RecebeCola();
+            }
+        }
     }
     public static void SetVelocity(Vector2 velocity)
     {

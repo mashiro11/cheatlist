@@ -15,6 +15,7 @@ public class Slingshot : MonoBehaviour {
     Vector2 touchOrigin;
     Vector2 touchEnd;
     Transform parent;
+    SlingshooterSelector selector;
 
     // Use this for initialization
     void Start () {
@@ -28,16 +29,17 @@ public class Slingshot : MonoBehaviour {
         lineRenderer.SetPosition(1, parent.position);
         //lineRenderer.sortingLayerName = GetComponent<SpriteRenderer>().sortingLayerName;
         lineRenderer.enabled = false;
+        selector = GetComponentInChildren<SlingshooterSelector>();
 
-        /*
-        arcRenderer = gameObject.transform.GetChild(0).GetComponent<LineRenderer>();
+        
+        arcRenderer = gameObject.transform.GetChild(1).GetComponent<LineRenderer>();
         arcRenderer.sortingLayerName = lineRenderer.sortingLayerName;
         arcRenderer.positionCount = 2;
         arcRenderer.SetPosition(0, parent.position);
         arcRenderer.SetPosition(1, parent.position);
         arcRenderer.gameObject.SetActive(false);
         //gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>().sortingLayerName = arcRenderer.sortingLayerName;
-        */
+        
     }
 
     // Update is called once per frame
@@ -49,7 +51,7 @@ public class Slingshot : MonoBehaviour {
         if (animator.GetBool("temCola"))
         {
             draggin = true;
-            //arcRenderer.gameObject.SetActive(true);
+            arcRenderer.gameObject.SetActive(true);
             //Debug.Log("Clicou em mim");
             touchOrigin = parent.position;
             lineRenderer.SetPosition(1, touchOrigin);
@@ -63,8 +65,8 @@ public class Slingshot : MonoBehaviour {
         touchEnd = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         lineRenderer.SetPosition(1, parent.position);
         lineRenderer.enabled = false;
-        //arcRenderer.SetPosition(1, parent.position);
-        //arcRenderer.gameObject.SetActive(false);
+        arcRenderer.SetPosition(1, parent.position);
+        arcRenderer.gameObject.SetActive(false);
     }
     private void OnMouseDrag()
     {
@@ -78,12 +80,13 @@ public class Slingshot : MonoBehaviour {
 
             direction.Set(direction.x + parent.position.x, direction.y + parent.position.y);//vetor transladado para posição correta
             lineRenderer.SetPosition(1, direction);
+           
 
-            //DrawArc(direction);
+            DrawArc(direction);
             //Debug.Log("Me arrastandooo");
         }
     }
-    /*
+    
     private void DrawArc(Vector2 direction)
     {
         for (int i = 1; i < arcRenderer.positionCount; i++)
@@ -92,9 +95,10 @@ public class Slingshot : MonoBehaviour {
             float magnitude = difference.magnitude;
             difference = difference.normalized * maxDistance * (magnitude / maxDragging); //direction.magnitude/maxDragging <= 1
             Vector2 destination = new Vector2(transform.position.x + difference.x, transform.position.y + difference.y);
-            Debug.Log("direction: " + direction + "| transform.position: " + transform.position + "| destination:  " + destination);
+            //Debug.Log("direction: " + direction + "| transform.position: " + transform.position + "| destination:  " + destination);
             arcRenderer.SetPosition(i, destination);
+            selector.gameObject.transform.position = destination;
         }
     }
-    */
+    
 }

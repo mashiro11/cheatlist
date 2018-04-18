@@ -70,7 +70,7 @@ public class ProfessorIA : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        
+        return;
         if (animator.GetBool("professorStopped"))
         {
             if (animator.GetBool("foundCheat"))
@@ -123,7 +123,7 @@ public class ProfessorIA : MonoBehaviour {
             positions.Add(new List<Vector2>());
             positions[++lastLine].Add(ponto);
         }
-        //Instantiate(cola, ponto, Quaternion.identity);
+        //GameObject c = Instantiate(cola, ponto, Quaternion.identity);
     }
 
     private void GenerateNextPosition()

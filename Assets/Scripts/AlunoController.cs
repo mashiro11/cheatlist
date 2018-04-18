@@ -8,6 +8,12 @@ public class AlunoController : MonoBehaviour {
     /*
      *      Variáveis estáticas
      */
+    enum AlunoSounds
+    {
+        PassaCola = 0,
+        Busted,
+        Colando
+    }
     public static Object aluno;
     public static float initialX = -8, initialY = -4.5f;
     public static float espacamentoX = 4, espacamentoY = 2.1f;
@@ -60,8 +66,6 @@ public class AlunoController : MonoBehaviour {
     public int tipoAluno = 0;
     public bool busted = false;
     private AudioSource aSource;
-    private LineRenderer lineRenderer;
-    private LineRenderer arcRenderer;
     private Camera cam;
     private string debugTag;
     private Slingshot slingshot;
@@ -99,6 +103,9 @@ public class AlunoController : MonoBehaviour {
             {
                 if (animator.GetFloat("tempoComCola") < tempoNecessario)
                 {
+                    Debug.Log("AlunoColando: " + (int)AlunoSounds.Colando);
+                    aSource.clip = sounds[(int)AlunoSounds.Colando];
+                    aSource.Play();
                     MostraProgressoCola();
                 }
                 if (tempoMinimo > 0)
@@ -145,6 +152,8 @@ public class AlunoController : MonoBehaviour {
         animator.SetTrigger("passandoACola");
         Cola.SetVelocity(velocity);
         animator.SetBool("temCola", false);
+        Debug.Log("AlunoPassaCola: " + (int)AlunoSounds.PassaCola);
+        aSource.clip = sounds[(int)AlunoSounds.PassaCola];
         aSource.Play();
         progressoCola.SetActive(false);
         
@@ -234,7 +243,8 @@ public class AlunoController : MonoBehaviour {
             busted = true;
             tempoMinimo = 0;
             aSource.Stop();
-            aSource.clip = sounds[1];
+            Debug.Log("AlunoBusted: " + (int)AlunoSounds.Busted);
+            aSource.clip = sounds[(int)AlunoSounds.Busted];
             aSource.Play();
             animator.SetTrigger("busted");
         }
@@ -269,17 +279,6 @@ public class AlunoController : MonoBehaviour {
         Vector3 flipper = transform.localScale;
         flipper.x *= -1;
         transform.localScale = flipper;
-    }
-
-    public void OnTriggerEnter2D(Collider2D collider)
-    {
-        if (collider.gameObject.tag == "Cola")
-        {
-            if (Cola.GetShooter() != this)
-            {
-                RecebeCola();
-            }
-        }
     }
 
 	public bool CanThrow(Vector2 direction){
