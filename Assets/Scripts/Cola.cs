@@ -27,7 +27,7 @@ public class Cola : MonoBehaviour {
     {
         if (collider.gameObject.CompareTag("Aluno") )
         {
-            if (GetShooter() != this)
+            if (collider.GetComponent<AlunoController>() == receiver)
             {
                 collider.GetComponent<AlunoController>().RecebeCola();
             }

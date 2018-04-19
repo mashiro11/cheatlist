@@ -62,6 +62,11 @@ public class Slingshot : MonoBehaviour {
     {
         draggin = false;
         //Debug.Log("Me soltou");
+        if (selector.AlunoSelected)
+        {
+            Cola.SetReceiver(AlunoController.GetAluno(selector.AlunoPosition));
+            Debug.Log("Receiver: " + selector.AlunoPosition);
+        }
         touchEnd = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         lineRenderer.SetPosition(1, parent.position);
         lineRenderer.enabled = false;

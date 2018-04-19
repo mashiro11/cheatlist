@@ -5,6 +5,16 @@ using UnityEngine;
 public class SlingshooterSelector : MonoBehaviour {
 
     AlunoController alunoParent;
+    Vector2Int alunoPosition;
+    public Vector2Int AlunoPosition
+    {
+        get { return alunoPosition; }
+    }
+
+    private bool alunoSelected;
+    public bool AlunoSelected {
+        get { return alunoSelected; }
+    }
     // Use this for initialization
     private void Awake()
     {
@@ -25,7 +35,20 @@ public class SlingshooterSelector : MonoBehaviour {
             alunoParent.transform != collider.transform )
         {
             AlunoController aluno = collider.GetComponent<AlunoController>();
-            Debug.Log("Encontrei aluno " + aluno.position);
+            aluno.outline.enabled = true;
+            alunoSelected = true;
+            alunoPosition.Set((int)aluno.position.x, (int)aluno.position.y);
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collider)
+    {
+        if (collider.gameObject.CompareTag("Aluno") &&
+            alunoParent.transform != collider.transform)
+        {
+            AlunoController aluno = collider.GetComponent<AlunoController>();
+            aluno.outline.enabled = false;
+            alunoSelected = false;
         }
     }
 }

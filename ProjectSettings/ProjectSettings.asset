@@ -639,7 +639,7 @@ PlayerSettings:
   cloudServicesEnabled:
     UNet: 1
   facebookSdkVersion: 7.9.4
-  apiCompatibilityLevel: 2
+  apiCompatibilityLevel: 3
   cloudProjectId: 8a89c712-3e3e-4f66-bc69-87f3fff20b7d
   projectName: shootthem
   organizationId: thiago-andre

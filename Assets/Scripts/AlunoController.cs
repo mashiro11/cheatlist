@@ -69,7 +69,8 @@ public class AlunoController : MonoBehaviour {
     private Camera cam;
     private string debugTag;
     private Slingshot slingshot;
-    
+    public LineRenderer outline;
+    //private Bounds spriteBounds;
     // Use this for initialization
     void Awake () {
         tipoAluno = Random.Range(0,2);
@@ -80,7 +81,8 @@ public class AlunoController : MonoBehaviour {
         slingshot = GetComponentInChildren<Slingshot>();
         
         animator.SetBool("temCola", false);
-	}
+        outline = GetComponent<LineRenderer>();
+    }
     private void Start()
     {
 
@@ -452,6 +454,15 @@ public class AlunoController : MonoBehaviour {
                 Vector2 position = new Vector2(initialX + j * espacamentoX, initialY + i * espacamentoY);
                 al = ((GameObject)Instantiate(aluno, position, Quaternion.identity));
                 alunos[i, j] = al;
+                Bounds spriteBounds = al.GetComponent<SpriteRenderer>().sprite.bounds;
+                LineRenderer outline = al.GetComponent<LineRenderer>();
+                outline.positionCount = 5;
+                outline.SetPosition(0, new Vector3(position.x - spriteBounds.extents.x, position.y - spriteBounds.extents.y, 0));
+                outline.SetPosition(1, new Vector3(position.x + spriteBounds.extents.x, position.y - spriteBounds.extents.y, 0));
+                outline.SetPosition(2, new Vector3(position.x + spriteBounds.extents.x, position.y + spriteBounds.extents.y, 0));
+                outline.SetPosition(3, new Vector3(position.x - spriteBounds.extents.x, position.y + spriteBounds.extents.y, 0));
+                outline.SetPosition(4, new Vector3(position.x - spriteBounds.extents.x, position.y - spriteBounds.extents.y, 0));
+                outline.enabled = false;
 
                 al.GetComponent<AlunoController>().position = new Vector2(i, j);
                 al.GetComponent<SpriteRenderer>().sortingLayerName = "Fileira" + i;
@@ -475,5 +486,10 @@ public class AlunoController : MonoBehaviour {
                 }
             }
         }
+    }
+
+    public static AlunoController GetAluno (Vector2Int position)
+    {
+        return alunos[position.x, position.y].GetComponent<AlunoController>();
     }
 }

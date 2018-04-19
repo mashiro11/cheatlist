@@ -134,8 +134,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ganhouUI: {fileID: 0}
   perdeuUI: {fileID: 0}
+  timerPanel: {fileID: 0}
   timerText: {fileID: 0}
-  timer: 260
+  timer: 10
   sounds:
   - {fileID: 8300000, guid: 0c75410206a293e4e851f20a533938f9, type: 3}
   - {fileID: 8300000, guid: 85ae28a9025377e4584a31d4b8749767, type: 3}

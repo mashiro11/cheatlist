@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour {
     const int STAGE_THEME = 0;
     const int BUSTED_THEME = 1;
     const int WIN_THEME = 2;
+    CameraRecord videoCapture;
 
 
 
@@ -160,6 +161,7 @@ public class GameManager : MonoBehaviour {
 
     public static void FimDeJogo()
     {
+        CameraRecord.stopRecord = true;
         float mean = AlunoController.GetMean();
         if (mean > 5) playerWins = true;
         else gameOver = true;
