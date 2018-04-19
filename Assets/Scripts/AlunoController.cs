@@ -39,7 +39,6 @@ public class AlunoController : MonoBehaviour {
     float colaRapida = 1;
     public bool dedoDuro;
 
-    public int velocidadeCola;
     [HideInInspector]
     public Vector2 position;
     public bool terminou = false;
@@ -126,33 +125,29 @@ public class AlunoController : MonoBehaviour {
                         //direction.y indica a direção vertical do arremesso;
                         //arremessos verticais alteram a linha que a cola está;
                         Cola.SetReceiver(alunos[(int)(position.x + direction.y), (int)(position.y + direction.x)].GetComponent<AlunoController>());
-                        PassaCola(direction);
                     }
                 }
             }
         }
     }
 
-    public void PassaCola(Vector2 direction)
+    public void PassaCola(AlunoController al)
     {
-        //Debug.Log(debugTag + "vou passar a cola para " + new Vector2(position.x+direction.y,position.y+direction.x));
-		Vector2 velocity = direction * velocidadeCola;
-        //Debug.Log(position.x + ", " + position.y);
-        if (velocity.x < 0) {
+        Vector3 direction = Vector3.Normalize(al.position - position);
+        if (direction.y < 0) {
             animator.SetInteger("direcao", 1);
             if (!animator.GetBool("olhandoEsquerda")) Flip();
-        }else if (velocity.x > 0)
+        }else if (direction.y > 0)
         {
             animator.SetInteger("direcao", 2);
             if (animator.GetBool("olhandoEsquerda")) Flip();
         }
 
-        if (velocity.y > 0) animator.SetInteger("direcao", 3);
-        else if(velocity.y < 0) animator.SetInteger("direcao", 4);
+        if (direction.x > 0) animator.SetInteger("direcao", 3);
+        else if(direction.x < 0) animator.SetInteger("direcao", 4);
 
 
         animator.SetTrigger("passandoACola");
-        Cola.SetVelocity(velocity);
         animator.SetBool("temCola", false);
         Debug.Log("AlunoPassaCola: " + (int)AlunoSounds.PassaCola);
         aSource.clip = sounds[(int)AlunoSounds.PassaCola];
@@ -231,7 +226,7 @@ public class AlunoController : MonoBehaviour {
             {
                 GameManager.GameOver();
             }
-            PassaCola(direction);
+            //PassaCola(direction);
 
             //O que o aluno tinha de pontos não soma mais na média da turma
             cheatProgress[(int)position.x, (int)position.y] = 0;
@@ -388,19 +383,13 @@ public class AlunoController : MonoBehaviour {
             else if (myTouch.phase == TouchPhase.Ended)
             {
                 Vector2 touchEnd = myTouch.position;
-                direction.x = touchEnd.x - touchOrigin.x;
-                direction.y = touchEnd.y - touchOrigin.y;
+                direction = touchEnd - touchOrigin;
+                direction = direction.x == direction.y ? direction : Vector2.zero;
+                direction.x = (direction.x > direction.y) ? direction.x : 0;
+                direction.y = (direction.y > direction.x) ? direction.y : 0;
+
+                direction = Vector3.Normalize(direction);
                 touchOrigin.Set(-1, -1);
-                if (Mathf.Abs(direction.x) == Mathf.Abs(direction.y))
-                {
-                    direction.Set(0, 0);
-                }else if(Mathf.Abs(direction.x) > Mathf.Abs(direction.y))
-                {
-                    direction.Set(direction.x / Mathf.Abs(direction.x), 0);
-                }else if (Mathf.Abs(direction.x) < Mathf.Abs(direction.y))
-                {
-                    direction.Set(0, direction.y/ Mathf.Abs(direction.y));
-                }
             }            
         }
 #endif
@@ -490,6 +479,7 @@ public class AlunoController : MonoBehaviour {
 
     public static AlunoController GetAluno (Vector2Int position)
     {
+        Debug.Log("position: " + position);
         return alunos[position.x, position.y].GetComponent<AlunoController>();
     }
 }

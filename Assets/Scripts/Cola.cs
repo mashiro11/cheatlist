@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class Cola : MonoBehaviour {
 
-    private static AlunoController shooter = null;
+    private static AlunoController shooter;
     private static AlunoController receiver = null;
     private static Rigidbody2D rBody;
     private static Cola instance;
+    private static int velocidadeCola = 15;
     // Use this for initialization
     private void Awake()
     {
@@ -48,6 +49,16 @@ public class Cola : MonoBehaviour {
     public static void SetReceiver(AlunoController aluno)
     {
         receiver = aluno;
+        if (receiver != null) {
+            Debug.Log("receiver.position: " + receiver.position);
+            Vector3 direction = receiver.transform.position - shooter.transform.position;
+            direction = Vector3.Normalize(direction);
+            Debug.Log("direction: " + direction);
+            int reducer = 0;
+            if(direction.x != 0 && direction.y != 0) reducer = 5;
+            rBody.velocity = new Vector2(direction.x * (velocidadeCola - reducer), direction.y * (velocidadeCola-reducer));
+            shooter.PassaCola(receiver);
+        }
     }
     public static AlunoController GetShooter()
     {
