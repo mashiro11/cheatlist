@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4664502425616708}
   - component: {fileID: 114294510001395562}
   - component: {fileID: 120964349128263756}
-  - component: {fileID: 58855416499783438}
+  - component: {fileID: 61778399774240896}
   m_Layer: 0
   m_Name: Slingshooter
   m_TagString: Untagged
@@ -60,8 +60,8 @@ GameObject:
   - component: {fileID: 212114473031674522}
   - component: {fileID: 95480686549267218}
   - component: {fileID: 82770539034992816}
-  - component: {fileID: 61585476898533652}
   - component: {fileID: 120356719503473112}
+  - component: {fileID: 61285860397942344}
   m_Layer: 0
   m_Name: Aluno
   m_TagString: Aluno
@@ -235,27 +235,37 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.08
---- !u!58 &58855416499783438
-CircleCollider2D:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1109431911995814}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  serializedVersion: 2
-  m_Radius: 0.7
---- !u!61 &61585476898533652
+--- !u!61 &61285860397942344
 BoxCollider2D:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1748693670096230}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1.3199999, y: 2.0433333}
+    newSize: {x: 0.2, y: 0.2}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1.3199999, y: 2.0433333}
+  m_EdgeRadius: 0
+--- !u!61 &61778399774240896
+BoxCollider2D:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1109431911995814}
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
@@ -383,7 +393,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f10632a557bd3140ae77de6b605c346, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  draggin: 0
   maxDragging: 3
   maxDistance: 7
 --- !u!114 &114449417226457014

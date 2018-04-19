@@ -9,7 +9,6 @@ public class Slingshot : MonoBehaviour {
     LineRenderer lineRenderer;
     LineRenderer arcRenderer;
 
-    public bool draggin = false;
     public float maxDragging;
     public float maxDistance;
     Vector2 touchOrigin;
@@ -50,25 +49,22 @@ public class Slingshot : MonoBehaviour {
     {
         if (animator.GetBool("temCola"))
         {
-            draggin = true;
             arcRenderer.gameObject.SetActive(true);
-            //Debug.Log("Clicou em mim");
             touchOrigin = parent.position;
             lineRenderer.SetPosition(1, touchOrigin);
             lineRenderer.enabled = true;
+            AlunoController.clicked = aluno;
         }
     }
     private void OnMouseUp()
     {
-        draggin = false;
-        //Debug.Log("Me soltou");
+        Debug.Log("Me soltou");
+        AlunoController.clicked = null;
         if (selector.AlunoSelected)
         {
             AlunoController al = AlunoController.GetAluno(selector.AlunoPosition);
-            Cola.SetReceiver(al);
+            Cola.MoveTo(al);
             al.outline.enabled = false;
-            al.PassaCola(al);
-            Debug.Log("Receiver: " + selector.AlunoPosition);
         }
         touchEnd = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         lineRenderer.SetPosition(1, parent.position);
@@ -89,9 +85,7 @@ public class Slingshot : MonoBehaviour {
             direction.Set(direction.x + parent.position.x, direction.y + parent.position.y);//vetor transladado para posição correta
             lineRenderer.SetPosition(1, direction);
            
-
             DrawArc(direction);
-            //Debug.Log("Me arrastandooo");
         }
     }
     
@@ -103,7 +97,6 @@ public class Slingshot : MonoBehaviour {
             float magnitude = difference.magnitude;
             difference = difference.normalized * maxDistance * (magnitude / maxDragging); //direction.magnitude/maxDragging <= 1
             Vector2 destination = new Vector2(transform.position.x + difference.x, transform.position.y + difference.y);
-            //Debug.Log("direction: " + direction + "| transform.position: " + transform.position + "| destination:  " + destination);
             arcRenderer.SetPosition(i, destination);
             selector.gameObject.transform.position = destination;
         }

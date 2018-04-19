@@ -15,6 +15,7 @@ public class AlunoController : MonoBehaviour {
         Colando
     }
     public static Object aluno;
+    public static AlunoController clicked = null;
     public static float initialX = -8, initialY = -4.5f;
     public static float espacamentoX = 4, espacamentoY = 2.1f;
     public static int maxLinhas = 4;
@@ -49,7 +50,6 @@ public class AlunoController : MonoBehaviour {
     //#if UNITY_IOS || UNITY_IPHONE || UNITY_ANDROID
     public Vector2 touchOrigin = new Vector2(-1, -1);
     public Vector2 touchEnd = new Vector2(-1, -1);
-    bool clicked = false;
 //#endif
     const int LEFT_CLICK = 0;
     const int RIGHT_CLICK = 1;
@@ -98,62 +98,42 @@ public class AlunoController : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        if (!stopControls)
+        if (!busted && animator.GetBool("temCola"))
         {
-            if (!busted && animator.GetBool("temCola"))
+            if (animator.GetFloat("tempoComCola") < tempoNecessario)
             {
-                if (animator.GetFloat("tempoComCola") < tempoNecessario)
-                {
-                    Debug.Log("AlunoColando: " + (int)AlunoSounds.Colando);
-                    aSource.clip = sounds[(int)AlunoSounds.Colando];
-                    aSource.Play();
-                    MostraProgressoCola();
-                }
-                if (tempoMinimo > 0)
-                {
-                    tempoMinimo -= Time.deltaTime;
-                }
-                if (!slingshot.draggin)
-                {
-                    //vai ser modificado.
-                    Vector2 direction = GetInputDirection();
-                    if (direction.magnitude != 0 &&
-                        animator.GetBool("temCola") &&
-                        tempoMinimo <= 0 &&
-                        CanThrow(direction))
-                    {
-                        //direction.y indica a direção vertical do arremesso;
-                        //arremessos verticais alteram a linha que a cola está;
-                        Cola.SetReceiver(alunos[(int)(position.x + direction.y), (int)(position.y + direction.x)].GetComponent<AlunoController>());
-                    }
-                }
+                Debug.Log("AlunoColando: " + (int)AlunoSounds.Colando);
+                aSource.clip = sounds[(int)AlunoSounds.Colando];
+                aSource.Play();
+                MostraProgressoCola();
+            }
+            if (tempoMinimo > 0)
+            {
+                tempoMinimo -= Time.deltaTime;
             }
         }
     }
 
-    public void PassaCola(AlunoController al)
+    public void PassaCola(Vector3 direction)
     {
-        Vector3 direction = Vector3.Normalize(al.position - position);
-        if (direction.y < 0) {
+        if (direction.x < 0) {
             animator.SetInteger("direcao", 1);
             if (!animator.GetBool("olhandoEsquerda")) Flip();
-        }else if (direction.y > 0)
+        }else if (direction.x > 0)
         {
             animator.SetInteger("direcao", 2);
             if (animator.GetBool("olhandoEsquerda")) Flip();
         }
 
-        if (direction.x > 0) animator.SetInteger("direcao", 3);
-        else if(direction.x < 0) animator.SetInteger("direcao", 4);
+        if (direction.y > 0) animator.SetInteger("direcao", 3);
+        else if(direction.y < 0) animator.SetInteger("direcao", 4);
 
 
         animator.SetTrigger("passandoACola");
         animator.SetBool("temCola", false);
-        Debug.Log("AlunoPassaCola: " + (int)AlunoSounds.PassaCola);
         aSource.clip = sounds[(int)AlunoSounds.PassaCola];
         aSource.Play();
         progressoCola.SetActive(false);
-        
         FindObjectOfType<FrontDetectorController>().colaNasCostas = false;
     }
 
@@ -197,10 +177,6 @@ public class AlunoController : MonoBehaviour {
         animator.SetBool("temCola", true);
         tempoMinimo = tempoMinimoDefinido;
         progressoCola.SetActive(true);
-        Cola.SetShooter(this);
-        Cola.SetReceiver(null);
-        Cola.SetVelocity(new Vector2(0,0));
-        Cola.SetPosition(this.transform.position);
     }
 
     public void Busted()
@@ -220,14 +196,6 @@ public class AlunoController : MonoBehaviour {
                 RecebeCola();
             }
 
-            //tenta passar pra frente. Se não conseguir, game over
-            Vector2 direction = FindAvailable();
-            if (direction.magnitude == Vector2.zero.magnitude)
-            {
-                GameManager.GameOver();
-            }
-            //PassaCola(direction);
-
             //O que o aluno tinha de pontos não soma mais na média da turma
             cheatProgress[(int)position.x, (int)position.y] = 0;
             
@@ -240,34 +208,10 @@ public class AlunoController : MonoBehaviour {
             busted = true;
             tempoMinimo = 0;
             aSource.Stop();
-            Debug.Log("AlunoBusted: " + (int)AlunoSounds.Busted);
             aSource.clip = sounds[(int)AlunoSounds.Busted];
             aSource.Play();
             animator.SetTrigger("busted");
         }
-    }
-
-    private Vector2 FindAvailable()
-    {
-        Vector2 direction = new Vector2(0, -1);
-        if (!CanThrow(direction))
-        {
-            direction.Set(0, 1);
-            if (!CanThrow(direction))
-            {
-                direction.Set(-1, 0);
-                if (!CanThrow(direction))
-                {
-                    direction.Set(1, 0);
-                    if (!CanThrow(direction))
-                    {
-                        direction.Set(0, 0);
-                    }
-                }
-            }
-        }
-        //Debug.Log(debugTag+ "Direction available!");
-        return direction;
     }
 
     public void Flip()
@@ -277,124 +221,7 @@ public class AlunoController : MonoBehaviour {
         flipper.x *= -1;
         transform.localScale = flipper;
     }
-
-	public bool CanThrow(Vector2 direction){
-		// position(i==x, j==y), linha e coluna
-		//direction(x, y), direção horizontal ou vertical
-		//coluna move com x
-		//linha move com y
-		bool canThrow = false;
-        bool cima = direction.y == 1;
-        bool baixo = direction.y == -1;
-        bool esquerda = direction.x == -1;
-        bool direita = direction.x == 1;
-        
-        if (position.x == 0)
-        {
-            //Debug.Log("Sou de baixo, pode ir pra cima");
-            canThrow |= cima;
-        }
-        else
-        {
-            //Debug.Log("Nao sou de baixo, pode ir pra baixo");
-            canThrow |= baixo;
-            if (position.x != 3)
-            {
-                //Debug.Log("Nao sou de cima, pode ir pra cima");
-                canThrow |= cima;
-            }
-        }
-
-        if (position.y == 0)
-        {
-            //Debug.Log("Sou de esquerda, pode ir pra direita");
-            canThrow |= direita;
-        }
-        else
-        {
-            //Debug.Log("Nao sou de esquerda, pode ir pra esquerda");
-            canThrow |= esquerda;
-            if (position.y != 4)
-            {
-                //Debug.Log("Nao sou de direita, pode ir pra direita");
-                canThrow |= direita;
-            }
-        }
-
-        if (canThrow)
-        {
-            AlunoController receiver = alunos[(int)(position.x + direction.y),(int)(position.y + direction.x)].GetComponent<AlunoController>();
-            if (receiver.busted)
-            {
-                canThrow = false;
-            }
-        }
-        return canThrow;
-	}
-
-	private Vector2 GetInputDirection()
-    {
-        Vector2 direction = Vector2.zero;
-        //Mouse funciona independente do target device
-        if (Input.GetMouseButtonDown(LEFT_CLICK) && !clicked)
-        {
-            touchOrigin = Input.mousePosition;
-            //Debug.Log("ori: " + touchOrigin);
-            clicked = true;
-        }
-        else if (Input.GetMouseButtonUp(LEFT_CLICK) && clicked)
-        {
-            touchEnd = Input.mousePosition;
-            direction.x = touchEnd.x - touchOrigin.x;
-            direction.y = touchEnd.y - touchOrigin.y;
-            //Debug.Log("end: " + touchEnd);
-            touchOrigin.Set(-1, -1);
-
-            if (Mathf.Abs(direction.x) == Mathf.Abs(direction.y))
-            {
-                direction.Set(0, 0);
-            }
-            else if (Mathf.Abs(direction.x) > Mathf.Abs(direction.y))
-            {
-                direction.Set(direction.x / Mathf.Abs(direction.x), 0);
-            }
-            else if (Mathf.Abs(direction.x) < Mathf.Abs(direction.y))
-            {
-                direction.Set(0, direction.y / Mathf.Abs(direction.y));
-            }
-            clicked = false;
-        }
-#if UNITY_STANDALONE || UNITY_WEBPLAYER
-        direction.Set(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-        if (Mathf.Abs(direction.x) == Mathf.Abs(direction.y))
-        {
-            direction.Set(0, 0);
-        }
-
-#elif UNITY_IOS || UNITY_IPHONE || UNITY_ANDROID
-        if (Input.touchCount > 0)
-        {
-            Touch myTouch = Input.touches[0];
-            
-            if (myTouch.phase == TouchPhase.Began)
-            {
-                touchOrigin = myTouch.position;
-            }
-            else if (myTouch.phase == TouchPhase.Ended)
-            {
-                Vector2 touchEnd = myTouch.position;
-                direction = touchEnd - touchOrigin;
-                direction = direction.x == direction.y ? direction : Vector2.zero;
-                direction.x = (direction.x > direction.y) ? direction.x : 0;
-                direction.y = (direction.y > direction.x) ? direction.y : 0;
-
-                direction = Vector3.Normalize(direction);
-                touchOrigin.Set(-1, -1);
-            }            
-        }
-#endif
-        return direction;
-    }
+   
 
     public static void StopControls(bool stop)
     {
@@ -479,7 +306,6 @@ public class AlunoController : MonoBehaviour {
 
     public static AlunoController GetAluno (Vector2Int position)
     {
-        Debug.Log("position: " + position);
         return alunos[position.x, position.y].GetComponent<AlunoController>();
     }
 }
