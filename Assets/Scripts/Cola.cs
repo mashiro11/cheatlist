@@ -33,7 +33,6 @@ public class Cola : MonoBehaviour {
 	void Update () {
         if (!AlunoController.clicked)
         {
-            Debug.Log("Sem click no personagem");
             GetInputDirection();
         }
         else

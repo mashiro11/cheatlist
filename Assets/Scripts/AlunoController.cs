@@ -70,7 +70,6 @@ public class AlunoController : MonoBehaviour {
     private Slingshot slingshot;
     public LineRenderer outline;
     //private Bounds spriteBounds;
-    // Use this for initialization
     void Awake () {
         tipoAluno = Random.Range(0,2);
         if(tipoAluno == 2) tipoAluno = 1;
@@ -102,7 +101,6 @@ public class AlunoController : MonoBehaviour {
         {
             if (animator.GetFloat("tempoComCola") < tempoNecessario)
             {
-                Debug.Log("AlunoColando: " + (int)AlunoSounds.Colando);
                 aSource.clip = sounds[(int)AlunoSounds.Colando];
                 aSource.Play();
                 MostraProgressoCola();
@@ -167,13 +165,13 @@ public class AlunoController : MonoBehaviour {
                 {
                     GameManager.FimDeJogo();
                 }
-                
             }
         }
     } 
 
     public void RecebeCola ()
     {
+
         animator.SetBool("temCola", true);
         tempoMinimo = tempoMinimoDefinido;
         progressoCola.SetActive(true);
@@ -307,5 +305,25 @@ public class AlunoController : MonoBehaviour {
     public static AlunoController GetAluno (Vector2Int position)
     {
         return alunos[position.x, position.y].GetComponent<AlunoController>();
+    }
+
+    private void OnMouseDown()
+    {
+        if (animator.GetBool("temCola"))
+        {
+            slingshot.Clicked();
+            AlunoController.clicked = this;
+        }
+    }
+
+    private void OnMouseDrag()
+    {
+        if(animator.GetBool("temCola")) slingshot.Drag();
+    }
+
+    private void OnMouseUp()
+    {
+        if (animator.GetBool("temCola"))
+            slingshot.Released();
     }
 }

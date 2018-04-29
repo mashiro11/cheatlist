@@ -15,8 +15,7 @@ public class Slingshot : MonoBehaviour {
     Vector2 touchEnd;
     Transform parent;
     SlingshooterSelector selector;
-
-    // Use this for initialization
+    
     void Start () {
         aluno = GetComponentInParent<AlunoController>();
         animator = GetComponentInParent<Animator>();
@@ -45,48 +44,46 @@ public class Slingshot : MonoBehaviour {
     void Update () {
 		
 	}
-    private void OnMouseDown()
+    public void Clicked()
     {
-        if (animator.GetBool("temCola"))
-        {
-            arcRenderer.gameObject.SetActive(true);
-            touchOrigin = parent.position;
-            lineRenderer.SetPosition(1, touchOrigin);
-            lineRenderer.enabled = true;
-            AlunoController.clicked = aluno;
-        }
+        lineRenderer.enabled = true;
+        arcRenderer.gameObject.SetActive(true);
+        touchOrigin = parent.position;
+        lineRenderer.SetPosition(1, touchOrigin);
     }
-    private void OnMouseUp()
+
+    public void Drag()
     {
-        Debug.Log("Me soltou");
-        AlunoController.clicked = null;
+        Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 direction = mousePosition - touchOrigin;
+        float magnitude = direction.magnitude;
+        direction = direction.normalized;//Vetor unitário, a partir da origem, na direção de interesse
+        direction *= (magnitude < maxDragging) ? magnitude : maxDragging;//vetor de tamanho maxDragging a partir da origem
+
+        direction.Set(direction.x + parent.position.x, direction.y + parent.position.y);//vetor transladado para posição correta
+        lineRenderer.SetPosition(1, direction);
+
+        DrawArc(direction);
+    }
+
+    public void Released()
+    {
         if (selector.AlunoSelected)
         {
+            AlunoController.clicked = null;
             AlunoController al = AlunoController.GetAluno(selector.AlunoPosition);
             Cola.MoveTo(al);
             al.outline.enabled = false;
+            touchEnd = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         }
-        touchEnd = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         lineRenderer.SetPosition(1, parent.position);
         lineRenderer.enabled = false;
         arcRenderer.SetPosition(1, parent.position);
         arcRenderer.gameObject.SetActive(false);
     }
-    private void OnMouseDrag()
+    private void OnMouseOver()
     {
-        if (animator.GetBool("temCola"))
-        {
-            Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Vector2 direction = mousePosition - touchOrigin;
-            float magnitude = direction.magnitude;
-            direction = direction.normalized;//Vetor unitário, a partir da origem, na direção de interesse
-            direction *= (magnitude < maxDragging) ? magnitude : maxDragging;//vetor de tamanho maxDragging a partir da origem
-
-            direction.Set(direction.x + parent.position.x, direction.y + parent.position.y);//vetor transladado para posição correta
-            lineRenderer.SetPosition(1, direction);
-           
-            DrawArc(direction);
-        }
+        Debug.Log("Passou em mim!");
     }
     
     private void DrawArc(Vector2 direction)

@@ -3,6 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class ProfessorIA : MonoBehaviour {
+    public enum AI_TYPE{
+        AI_1,
+        AI_2,
+        NONE
+    }
+    public AI_TYPE ai_type = AI_TYPE.NONE;
+    
+    public enum ProfStates
+    {
+        IDLE,
+        MOVING,
+        FOUND_CHEAT
+    }
+    public ProfStates profState = ProfStates.IDLE;
+
     public GameObject cola;
     public Vector2 startingPoint = new Vector2(1, 3);
     public float speed = 3f;
@@ -29,7 +44,6 @@ public class ProfessorIA : MonoBehaviour {
     private int toGetCloserCounter = 1;
     private int getCloserTimes = 4;
     private int getCloserTimesCounter = 1;
-
 
     private GameObject destinationKnob;
     private string debugTag;
@@ -70,7 +84,18 @@ public class ProfessorIA : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        return;
+
+        switch(ai_type){
+            case AI_TYPE.NONE:
+                return;
+        }
+
+        switch (profState)
+        {
+            case ProfStates.IDLE:
+                break;
+        }
+
         if (animator.GetBool("professorStopped"))
         {
             if (animator.GetBool("foundCheat"))
@@ -157,7 +182,7 @@ public class ProfessorIA : MonoBehaviour {
             {                   //mantem a linha       //sorteia uma coluna
                 destination.Set(currentPoint.x, Random.Range(0, maxColunas));
             }
-            destinationKnob.transform.position = positions[(int)destination.x][(int)destination.y];
+            //destinationKnob.transform.position = positions[(int)destination.x][(int)destination.y];
         }
 
     }

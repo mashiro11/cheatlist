@@ -469,9 +469,8 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1.42
-  m_Text: Pass the cheat sheet to every classmate you can before the time runs out!
-    At least 10 of them must copy all the answers, so that the class mean score raises.
-    Meanwhile, avoid the sight of the teacher!!
+  m_Text: Pass the cheat sheet to everyone so that the class mean score raise. Don't
+    forget to avoid the sight of the teacher!!
 --- !u!114 &114295734932520208
 MonoBehaviour:
   m_ObjectHideFlags: 1
