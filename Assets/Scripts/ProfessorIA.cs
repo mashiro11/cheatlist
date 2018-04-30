@@ -84,6 +84,15 @@ public class ProfessorIA : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
+        if (Input.anyKeyDown)
+        {
+            switch (Input.inputString)
+            {
+                case "1":
+                    ai_type = AI_TYPE.AI_1;
+                    break;
+            }
+        }
 
         switch(ai_type){
             case AI_TYPE.NONE:
@@ -233,11 +242,11 @@ public class ProfessorIA : MonoBehaviour {
             }
         }
         destination = nearest;
-        destinationKnob.transform.position = positions[(int)destination.x][(int)destination.y];
         Debug.Log(debugTag + "Entry Position: " + position);
-        Debug.Log(debugTag + "Nearest position: " + destination + 
-            " : (" + positions[(int)destination.x][(int)destination.y].x + "," + 
+        Debug.Log(debugTag + "Nearest position: " + destination +
+            " : (" + positions[(int)destination.x][(int)destination.y].x + "," +
                   positions[(int)destination.x][(int)destination.y].y + ")");
+        //destinationKnob.transform.position = positions[(int)destination.x][(int)destination.y];
     }
 
     private void SetDirection()

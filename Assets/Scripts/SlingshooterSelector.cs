@@ -35,7 +35,7 @@ public class SlingshooterSelector : MonoBehaviour {
             alunoParent.transform != collider.transform )
         {
             AlunoController aluno = collider.GetComponent<AlunoController>();
-            aluno.outline.enabled = true;
+            aluno.SetOutline(true);
             alunoSelected = true;
             alunoPosition.Set((int)aluno.position.x, (int)aluno.position.y);
         }
@@ -47,7 +47,7 @@ public class SlingshooterSelector : MonoBehaviour {
             alunoParent.transform != collider.transform)
         {
             AlunoController aluno = collider.GetComponent<AlunoController>();
-            aluno.outline.enabled = false;
+            aluno.SetOutline(false);
             alunoSelected = false;
         }
     }

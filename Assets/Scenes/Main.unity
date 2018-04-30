@@ -510,6 +510,10 @@ Prefab:
       propertyPath: timerPanel
       value: 
       objectReference: {fileID: 2081068371}
+    - target: {fileID: 1816941825321396, guid: bda3d3442b8abc94ba01fb80b5fe5249, type: 2}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bda3d3442b8abc94ba01fb80b5fe5249, type: 2}
   m_IsPrefabParent: 0

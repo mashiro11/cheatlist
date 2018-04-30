@@ -4,6 +4,13 @@ using UnityEngine;
 
 public class Cola : MonoBehaviour {
 
+    enum MouseClick
+    {
+        LEFT = 0,
+        RIGHT,
+        MIDDLE
+    }
+
     private static AlunoController shooter;
     private static AlunoController receiver = null;
     private static Rigidbody2D rBody;
@@ -16,10 +23,7 @@ public class Cola : MonoBehaviour {
     private static Vector2 touchEnd = new Vector2(-1, -1);
     private static bool clicked = false;
     //#endif
-    private const int LEFT_CLICK = 0;
-    private const int RIGHT_CLICK = 1;
-    private const int MIDDLE_CLICK = 2;
-    // Use this for initialization
+
     private void Awake()
     {
         rBody = GetComponent<Rigidbody2D>();
@@ -35,10 +39,7 @@ public class Cola : MonoBehaviour {
         {
             GetInputDirection();
         }
-        else
-        {
-            Debug.Log("Aluno clicado: " + AlunoController.clicked.position);
-        }
+        
         if (CanThrow())
         {
             MoveTo(AlunoController.GetAluno(new Vector2Int((int)(shooter.position.x + direction.y),
@@ -99,19 +100,15 @@ public class Cola : MonoBehaviour {
 
     private static void GetInputDirection()
     {
-        if (AlunoController.clicked)
-        {
-            Debug.Log("Aluno Clicado");
-        }
         direction = Vector2.zero;
         //Mouse funciona independente do target device
-        if (Input.GetMouseButtonDown(LEFT_CLICK) && !clicked)
+        if (Input.GetMouseButtonDown((int)MouseClick.LEFT) && !clicked)
         {
             touchOrigin = Input.mousePosition;
             //Debug.Log("ori: " + touchOrigin);
             clicked = true;
         }
-        else if (Input.GetMouseButtonUp(LEFT_CLICK) && clicked)
+        else if (Input.GetMouseButtonUp((int)MouseClick.LEFT) && clicked)
         {
             touchEnd = Input.mousePosition;
             direction.x = touchEnd.x - touchOrigin.x;

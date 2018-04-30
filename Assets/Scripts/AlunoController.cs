@@ -8,14 +8,7 @@ public class AlunoController : MonoBehaviour {
     /*
      *      Variáveis estáticas
      */
-    enum AlunoSounds
-    {
-        PassaCola = 0,
-        Busted,
-        Colando
-    }
-    public static Object aluno;
-    public static AlunoController clicked = null;
+    //Inicialização das posições
     public static float initialX = -8, initialY = -4.5f;
     public static float espacamentoX = 4, espacamentoY = 2.1f;
     public static int maxLinhas = 4;
@@ -25,51 +18,62 @@ public class AlunoController : MonoBehaviour {
     private static GameObject[,] alunos = new GameObject[maxLinhas, maxColunas];
     private static float[,] cheatProgress = new float[maxLinhas, maxColunas];
 
+    //Inicialização dos contadores para regras de jogo
     private static int bustedCounter = 0;
     private static int finishedCounter = 0;
     private static int chances = 5;
     private static int minToWin = 10;
 
+    //Impede jogador de continuar movimentando após fim de jogo
     private static bool stopControls = false;
-    
 
+    //utilizado para saber qual tipo de arremesso será executado
+    public static AlunoController clicked = null;
 
-    public GameObject progressoCola;
-    
-    public AudioClip[] sounds;
-    float colaRapida = 1;
-    public bool dedoDuro;
+    /*
+     *  Referências por objeto 
+     */
+    enum AlunoChild
+    {
+        Slingshooter = 0,
+        ProgressoCola,
+        Shadow
+    }
+    private Camera cam;
+    private GameObject progressoCola;
+    private AudioSource aSource;
+    private Animator animator;
+    private LineRenderer outline;
+    private Slingshot slingshot;
 
-    [HideInInspector]
+    //MetaInfo
     public Vector2 position;
-    public bool terminou = false;
     public bool draggin = false;
     public float maxDragging;
     public float maxDistance;
+    float colaRapida = 1;
 
-    //#if UNITY_IOS || UNITY_IPHONE || UNITY_ANDROID
-    public Vector2 touchOrigin = new Vector2(-1, -1);
-    public Vector2 touchEnd = new Vector2(-1, -1);
-//#endif
-    const int LEFT_CLICK = 0;
-    const int RIGHT_CLICK = 1;
-    const int MIDDLE_CLICK = 2;
-
-    float tempoMinimo;
-    public float tempoMinimoDefinido;
-    public static float tempoNecessario = 10;
+    float tempoMinimo;//timer
+    public float tempoMinimoDefinido;//time
+    public static float tempoNecessario = 10;//totalTime
 
     public Sprite[] sprites;
-    public Animator animator;
-    public AnimationClip anim;
+    enum AlunoSounds
+    {
+        PassaCola = 0,
+        Busted,
+        Colando
+    }
+    public AudioClip[] sounds;
+
+    //Infos do objeto
     public int tipoAluno = 0;
     public bool busted = false;
-    private AudioSource aSource;
-    private Camera cam;
+    public bool terminou = false;
+    public bool dedoDuro;
+
     private string debugTag;
-    private Slingshot slingshot;
-    public LineRenderer outline;
-    //private Bounds spriteBounds;
+
     void Awake () {
         tipoAluno = Random.Range(0,2);
         if(tipoAluno == 2) tipoAluno = 1;
@@ -77,13 +81,15 @@ public class AlunoController : MonoBehaviour {
         aSource = GetComponent<AudioSource>();
         animator = GetComponent<Animator>();
         slingshot = GetComponentInChildren<Slingshot>();
-        
-        animator.SetBool("temCola", false);
         outline = GetComponent<LineRenderer>();
+        progressoCola = transform.GetChild((int)AlunoChild.ProgressoCola).gameObject;
+
+        animator.SetBool("temCola", false);
     }
     private void Start()
     {
-
+        string path = "AnimationControllerOverride/";
+        animator.runtimeAnimatorController = Resources.Load(path + "Aluno" + Random.Range(1, 7)) as RuntimeAnimatorController;
         if(Camera.main != null)
         {
             cam = Camera.main;
@@ -258,7 +264,7 @@ public class AlunoController : MonoBehaviour {
     public static void SpawnAlunos()
     {
         Instantiate(Resources.Load("Cola"), Vector2.zero, Quaternion.identity);
-        aluno = Resources.Load("Aluno");
+        Object aluno = Resources.Load("Aluno");
         GameObject al;
 
         for (int i = 0; i < maxLinhas; i++)
@@ -280,6 +286,8 @@ public class AlunoController : MonoBehaviour {
 
                 al.GetComponent<AlunoController>().position = new Vector2(i, j);
                 al.GetComponent<SpriteRenderer>().sortingLayerName = "Fileira" + i;
+                al.transform.GetChild((int)AlunoChild.Shadow).GetComponent<SpriteRenderer>().sortingLayerName = "Fileira" + i;
+                al.transform.GetChild((int)AlunoChild.Shadow).GetComponent<SpriteRenderer>().sortingOrder = 0;
                 //Debug.Log(i + ", " + j);
                 if (Random.Range(1, 11) <= 1)
                 {
@@ -302,6 +310,11 @@ public class AlunoController : MonoBehaviour {
         }
     }
 
+    public void SetOutline(bool outlined)
+    {
+        outline.enabled = outlined;
+    }
+
     public static AlunoController GetAluno (Vector2Int position)
     {
         return alunos[position.x, position.y].GetComponent<AlunoController>();
@@ -312,7 +325,7 @@ public class AlunoController : MonoBehaviour {
         if (animator.GetBool("temCola"))
         {
             slingshot.Clicked();
-            AlunoController.clicked = this;
+            clicked = this;
         }
     }
 
@@ -324,6 +337,9 @@ public class AlunoController : MonoBehaviour {
     private void OnMouseUp()
     {
         if (animator.GetBool("temCola"))
+        {
             slingshot.Released();
+            clicked = null;
+        }
     }
 }

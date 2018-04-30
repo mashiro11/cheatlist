@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: Aluno2
+  m_Controller: {fileID: 9100000, guid: 1f9953848f55d3440b9e323b9cb5d880, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: 9457c859160abc24d86e1796c618a86d, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 9457c859160abc24d86e1796c618a86d, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: fc9278071e589e24ea16d4456410213c, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: fc9278071e589e24ea16d4456410213c, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: a9acb7a699257f147995b8600acc8c91, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 091947ff3f6815d47aeb704f35a0f198, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 34b60a5eba8050c48b51535635041590, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 7b916d6d9146bc14aa5c6b553638773d, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 428c68a55622e3c4191763d1aa0901b8, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: d5a21257a739acb488d38b6fca1b5db6, type: 2}

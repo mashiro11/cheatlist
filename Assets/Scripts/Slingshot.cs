@@ -70,10 +70,10 @@ public class Slingshot : MonoBehaviour {
     {
         if (selector.AlunoSelected)
         {
-            AlunoController.clicked = null;
+            //AlunoController.clicked = null;
             AlunoController al = AlunoController.GetAluno(selector.AlunoPosition);
             Cola.MoveTo(al);
-            al.outline.enabled = false;
+            al.SetOutline(false);
             touchEnd = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         }
         lineRenderer.SetPosition(1, parent.position);
