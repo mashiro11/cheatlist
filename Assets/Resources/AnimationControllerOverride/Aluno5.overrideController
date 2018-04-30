@@ -6,5 +6,15 @@ AnimatorOverrideController:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: Aluno5
-  m_Controller: {fileID: 0}
-  m_Clips: []
+  m_Controller: {fileID: 9100000, guid: 1f9953848f55d3440b9e323b9cb5d880, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: 9457c859160abc24d86e1796c618a86d, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 9f3cedf513c889c409d04b89e9342e24, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: fc9278071e589e24ea16d4456410213c, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 7815efb349eb36d41ad70153ff1a9c0a, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: a9acb7a699257f147995b8600acc8c91, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: aee97d37f20409e44b1db852e7315e5f, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 34b60a5eba8050c48b51535635041590, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: b4116f4768586dd41a1aac8712039129, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 428c68a55622e3c4191763d1aa0901b8, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 602c33de74d93c04192c74053aca4e06, type: 2}
