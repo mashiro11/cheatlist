@@ -66,6 +66,8 @@ public class Cola : MonoBehaviour {
     public static void SetPosition(Vector2 position)
     {
         instance.transform.position = position;
+        receiver = null;
+        rBody.velocity = Vector3.zero;
     }
     public static void SetShooter(AlunoController aluno)
     {

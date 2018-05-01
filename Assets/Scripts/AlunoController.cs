@@ -215,6 +215,7 @@ public class AlunoController : MonoBehaviour {
             aSource.clip = sounds[(int)AlunoSounds.Busted];
             aSource.Play();
             animator.SetTrigger("busted");
+            progressoCola.SetActive(false);
         }
     }
 
@@ -341,5 +342,25 @@ public class AlunoController : MonoBehaviour {
             slingshot.Released();
             clicked = null;
         }
+    }
+
+    public static void GenerateCheatOnFarest(Vector3 position)
+    {
+        //de inicio, chuto que o ponto mais distante é onde estou
+        Vector2Int index = Vector2Int.zero;
+        for (int i = 0; i < maxLinhas; i++)
+        {
+            for (int j = 0; j < maxColunas; j++)
+            {
+                if ((alunos[i, j].transform.position - position).magnitude > (alunos[index.x,index.y].transform.position - position).magnitude &&
+                    !alunos[i, j].GetComponent<AlunoController>().busted)
+                {
+                    index.Set(i, j);
+                }
+            }
+        }
+        Cola.SetPosition(alunos[index.x, index.y].transform.position);
+        Cola.SetShooter(alunos[index.x, index.y].GetComponent<AlunoController>());
+        alunos[index.x, index.y].GetComponent<AlunoController>().RecebeCola();
     }
 }

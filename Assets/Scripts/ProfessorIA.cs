@@ -6,10 +6,11 @@ public class ProfessorIA : MonoBehaviour {
     public enum AI_TYPE{
         AI_1,
         AI_2,
-        NONE
+        NONE //professor stop
     }
     public AI_TYPE ai_type = AI_TYPE.NONE;
-    
+
+    //Machine states
     public enum ProfStates
     {
         IDLE,
@@ -18,51 +19,73 @@ public class ProfessorIA : MonoBehaviour {
     }
     public ProfStates profState = ProfStates.IDLE;
 
-    public GameObject cola;
+    //GameObject hierarchy
+    enum ProfessorChilds
+    {
+        Art = 0,
+        HorizontalDetector,
+        FrontDetector
+    }
+    
+    //Pointers to instances
+    private GameObject cola;
+    private SpriteRenderer shadow;
+    private SpriteRenderer professorSprite;
+    private Animator animator;
+
+    //Positioning
     public Vector2 startingPoint = new Vector2(1, 3);
+    private List<List<Vector2>> positions = new List<List<Vector2>>();
+    private Vector2 currentPoint = Vector2.zero;//Diz qual a posição da matriz positions o professor vai sair
+    private Vector2 direction = Vector2.zero;
+
+    //Movimentation
     public float speed = 3f;
     public float waitTime = 4f;
     public float distanceToTables;
     private Vector2 destination;//Diz qual posição da matriz positions o professor deve ir
 
-    private List<List<Vector2>> positions = new List<List<Vector2>>();
+
     private int lastLine = 0;
     private int lastItem = 0;
     private int maxLinhas = 0;
     private int maxColunas = 0;
-    private Vector2 currentPoint = Vector2.zero;//Diz qual a posição da matriz positions o professor vai sair
-    private Vector2 direction = Vector2.zero;
+
     private float delta = 0.3f;
     private float waitTimer;
     private bool professorStopped = true;
-    private Animator animator;
     private bool facingLeft = true;
-    private SpriteRenderer shadow;
-    private SpriteRenderer professorSprite;
-    private AudioListener listener;
+
+    //AI metainfo
     private int toGetCloser = 3;
     private int toGetCloserCounter = 1;
     private int getCloserTimes = 4;
     private int getCloserTimesCounter = 1;
 
+#if (DEBUG)
     private GameObject destinationKnob;
+#endif
     private string debugTag;
+
     private void Awake()
     {
+        //Debug
         debugTag = "[Professor]:";
+#if (DEBUG)
+        destinationKnob = Instantiate((GameObject)Resources.Load("Destination"), Vector3.zero, Quaternion.identity);
+#endif
     }
     // Use this for initialization
     void Start () {
-        professorSprite = transform.GetChild(0).GetComponent<SpriteRenderer>();
+        professorSprite = transform.GetChild((int)ProfessorChilds.Art).GetComponent<SpriteRenderer>();
         shadow = professorSprite.transform.GetChild(0).GetComponent<SpriteRenderer>();
-        destinationKnob = GameObject.Find("Destination");
-        listener = GetComponent<AudioListener>();
-        currentPoint = startingPoint;
-        destination = Vector2.zero;
         professorSprite.sortingLayerName = shadow.sortingLayerName = "Default";
 
         animator = professorSprite.gameObject.GetComponent<Animator>();
         animator.SetFloat("waitTimer", waitTime);
+
+        currentPoint = startingPoint;
+        destination = Vector2.zero;
 
         positions.Add(new List<Vector2>());
         maxColunas = AlunoController.maxColunas;  
@@ -90,6 +113,9 @@ public class ProfessorIA : MonoBehaviour {
             {
                 case "1":
                     ai_type = AI_TYPE.AI_1;
+                    break;
+                case "2":
+                    ai_type = AI_TYPE.AI_2;
                     break;
             }
         }
@@ -146,6 +172,7 @@ public class ProfessorIA : MonoBehaviour {
             animator.SetBool("professorStopped", false);
         }
     }
+
     public void AddPonto(Vector2 ponto)
     {
         if(positions[lastLine].Count < maxColunas+1)//cabem maxColunas em uma linha
@@ -157,7 +184,6 @@ public class ProfessorIA : MonoBehaviour {
             positions.Add(new List<Vector2>());
             positions[++lastLine].Add(ponto);
         }
-        //GameObject c = Instantiate(cola, ponto, Quaternion.identity);
     }
 
     private void GenerateNextPosition()
@@ -191,7 +217,9 @@ public class ProfessorIA : MonoBehaviour {
             {                   //mantem a linha       //sorteia uma coluna
                 destination.Set(currentPoint.x, Random.Range(0, maxColunas));
             }
-            //destinationKnob.transform.position = positions[(int)destination.x][(int)destination.y];
+#if DEBUG
+            destinationKnob.transform.position = positions[(int)destination.x][(int)destination.y];
+#endif
         }
 
     }
@@ -246,7 +274,9 @@ public class ProfessorIA : MonoBehaviour {
         Debug.Log(debugTag + "Nearest position: " + destination +
             " : (" + positions[(int)destination.x][(int)destination.y].x + "," +
                   positions[(int)destination.x][(int)destination.y].y + ")");
-        //destinationKnob.transform.position = positions[(int)destination.x][(int)destination.y];
+#if DEBUG
+        destinationKnob.transform.position = positions[(int)destination.x][(int)destination.y];
+#endif
     }
 
     private void SetDirection()
@@ -329,7 +359,6 @@ public class ProfessorIA : MonoBehaviour {
     {
         if (collider.gameObject.tag == "Cola")
         {
-            //Debug.Log("Chamei no professor");
             Catch(collider.gameObject.GetComponent<Cola>());
         }
     }
@@ -350,5 +379,6 @@ public class ProfessorIA : MonoBehaviour {
 
         if(Cola.GetShooter()) Cola.GetShooter().Busted();
         if(Cola.GetReceiver()) Cola.GetReceiver().Busted();
+        AlunoController.GenerateCheatOnFarest(transform.position);
     }
 }

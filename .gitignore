@@ -4,6 +4,7 @@
 [Bb]uild/
 [Bb]uilds/
 iOSApp/
+Assets/Editaveis/
 Assets/AssetStoreTools*
 
 # Visual Studio 2015 cache directory
