@@ -85,6 +85,10 @@ public class GameManager : MonoBehaviour {
                 Time.timeScale = 0f;
             }
         }
+        else
+        {
+            AlunoController.SomeoneNeedsCheat();
+        }
 
         if (playerWins)
         {

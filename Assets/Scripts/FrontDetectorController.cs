@@ -6,7 +6,6 @@ public class FrontDetectorController : MonoBehaviour {
 
     private ProfessorIA professor;
     private Animator professorAnimator;
-    public bool colaNasCostas;
     public float distanciaDaCola;
     // Use this for initialization
 	void Start () {
@@ -42,7 +41,7 @@ public class FrontDetectorController : MonoBehaviour {
 
             if  (((Mathf.Abs(collision.transform.position.y - professor.transform.position.y) < distanciaDaCola )))
             {
-                colaNasCostas = true;
+                AlunoController.colaNasCostas = true;
             }
 
         }

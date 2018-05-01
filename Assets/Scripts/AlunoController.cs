@@ -70,6 +70,11 @@ public class AlunoController : MonoBehaviour {
     public int tipoAluno = 0;
     public bool busted = false;
     public bool terminou = false;
+    private static bool bonusSpeed;
+    public static bool colaNasCostas;
+    public static AlunoController needsCheat = null;
+    public static float needsCheatTime = 5;
+    public static float needsCheatTimer = needsCheatTime;
     public bool dedoDuro;
 
     private string debugTag;
@@ -111,6 +116,14 @@ public class AlunoController : MonoBehaviour {
                 aSource.Play();
                 MostraProgressoCola();
             }
+            else if(needsCheat == this)
+            {
+                needsCheatTimer -= Time.deltaTime;
+                if (needsCheatTimer < 0)
+                {
+                    NeedsCheat(false);
+                }
+            }
             if (tempoMinimo > 0)
             {
                 tempoMinimo -= Time.deltaTime;
@@ -138,14 +151,19 @@ public class AlunoController : MonoBehaviour {
         aSource.clip = sounds[(int)AlunoSounds.PassaCola];
         aSource.Play();
         progressoCola.SetActive(false);
-        FindObjectOfType<FrontDetectorController>().colaNasCostas = false;
+        colaNasCostas = false;
+        bonusSpeed = false;
     }
 
     public void MostraProgressoCola()
     {
-        if (FindObjectOfType<FrontDetectorController>().colaNasCostas)
+        if (bonusSpeed || colaNasCostas)
         {
-            colaRapida = 2;
+            colaRapida = 3;
+        }
+        else
+        {
+            colaRapida = 1;
         }
         cheatProgress[(int)position.x,(int)position.y] += Time.deltaTime * colaRapida;
         Mathf.Clamp(cheatProgress[(int)position.x, (int)position.y], 0, tempoNecessario);
@@ -181,6 +199,11 @@ public class AlunoController : MonoBehaviour {
         animator.SetBool("temCola", true);
         tempoMinimo = tempoMinimoDefinido;
         progressoCola.SetActive(true);
+        if(needsCheat == this)
+        {
+            bonusSpeed |= true;
+            NeedsCheat(false);
+        }
     }
 
     public void Busted()
@@ -362,5 +385,36 @@ public class AlunoController : MonoBehaviour {
         Cola.SetPosition(alunos[index.x, index.y].transform.position);
         Cola.SetShooter(alunos[index.x, index.y].GetComponent<AlunoController>());
         alunos[index.x, index.y].GetComponent<AlunoController>().RecebeCola();
+    }
+
+    public static void SomeoneNeedsCheat()
+    {
+        if(Random.Range(0, 1f) > 0.6)
+        {
+            while(!needsCheat)
+            {
+                AlunoController al = alunos[Random.Range(0, maxLinhas), Random.Range(0, maxLinhas)].GetComponent<AlunoController>();
+                if (!needsCheat && Cola.GetShooter() != al && 
+                    !al.busted && !al.terminou)
+                {
+                    needsCheatTimer = needsCheatTime;
+                    al.NeedsCheat(true);
+                }
+            }
+        }
+    }
+
+    private void NeedsCheat(bool needs)
+    {
+        if (needs)
+        {
+            needsCheat = this;
+            GetComponent<SpriteRenderer>().color = new Color(1, 0, 0);
+        }
+        else
+        {
+            needsCheat = null;
+            GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
+        }
     }
 }
