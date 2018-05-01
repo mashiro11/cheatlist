@@ -188,40 +188,54 @@ public class ProfessorIA : MonoBehaviour {
 
     private void GenerateNextPosition()
     {
-        if (toGetCloserCounter == toGetCloser)//quantas posições aleatorias ja foram para começar posições de perseguição
+        switch (ai_type)
         {
-            Debug.Log(debugTag + "Perseguindo!");
-            if (getCloserTimesCounter < getCloserTimes)//quantas posições de perseguição ja foram
-            {
-                Debug.Log(debugTag + getCloserTimesCounter + "a vez");
-                if(getCloserTimesCounter++ == 1) waitTime /= 2;
-                GenerateNearest(Cola.GetPosition());
-            }
-            else
-            {
-                Debug.Log(debugTag + "Terminou essa perseguicao");
-                getCloserTimesCounter = 1;
-                toGetCloserCounter = 1;
-                waitTime *= 2;
-            }
+            case AI_TYPE.AI_1:
+                if(Random.Range(0, 2) == 0)
+                {
+                    destination.Set(currentPoint.x, Random.Range(0, maxColunas));
+                }
+                else
+                {
+                    destination.Set(Random.Range(0, maxLinhas), currentPoint.y);
+                }
+                break;
+            case AI_TYPE.AI_2:
+                if (toGetCloserCounter == toGetCloser)//quantas posições aleatorias ja foram para começar posições de perseguição
+                {
+                    Debug.Log(debugTag + "Perseguindo!");
+                    if (getCloserTimesCounter < getCloserTimes)//quantas posições de perseguição ja foram
+                    {
+                        Debug.Log(debugTag + getCloserTimesCounter + "a vez");
+                        if (getCloserTimesCounter++ == 1) waitTime /= 2;
+                        GenerateNearest(Cola.GetPosition());
+                    }
+                    else
+                    {
+                        Debug.Log(debugTag + "Terminou essa perseguicao");
+                        getCloserTimesCounter = 1;
+                        toGetCloserCounter = 1;
+                        waitTime *= 2;
+                    }
+                }
+                else
+                {
+                    toGetCloserCounter++;
+                    if (Random.Range(1, 11) > 5f)
+                    {
+                        //sorteia uma linha             //mantem a coluna
+                        destination.Set(Random.Range(0, maxLinhas), currentPoint.y);
+                    }
+                    else
+                    {                   //mantem a linha       //sorteia uma coluna
+                        destination.Set(currentPoint.x, Random.Range(0, maxColunas));
+                    }
+                }
+                break;
         }
-        else
-        {
-            toGetCloserCounter++;
-            if (Random.Range(1, 11) > 5f)
-            {
-                //sorteia uma linha             //mantem a coluna
-                destination.Set(Random.Range(0, maxLinhas), currentPoint.y);
-            }
-            else
-            {                   //mantem a linha       //sorteia uma coluna
-                destination.Set(currentPoint.x, Random.Range(0, maxColunas));
-            }
 #if DEBUG
             destinationKnob.transform.position = positions[(int)destination.x][(int)destination.y];
 #endif
-        }
-
     }
 
     public void GenerateNearest(Vector2 position)
