@@ -21,14 +21,26 @@ public class GameManager : MonoBehaviour {
     public AudioClip[] sounds;
     AudioSource aSource;
     private bool busted = false;
-    const int STAGE_THEME = 0;
-    const int BUSTED_THEME = 1;
-    const int WIN_THEME = 2;
-    //CameraRecord videoCapture;
+    private bool startedWinMusic = false;
+    enum Songs
+    {
+        STAGE_THEME = 0,
+        BUSTED_THEME = 1,
+        WIN_THEME = 2
+    }
+
+    enum GameState
+    {
+        RUNNING,
+        PLAYER_WINS,
+        PLAYER_LOSES
+    }
+    static GameState gameState = GameState.RUNNING;
+//CameraRecord videoCapture;
 
 
 
-    void Start () {
+void Start () {
         Screen.orientation = ScreenOrientation.Landscape;
         //timerPanel.GetComponent<Canvas>().renderMode = RenderMode.WorldSpace;
         AlunoController.SpawnAlunos();
@@ -44,67 +56,71 @@ public class GameManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        
-        timer -= Time.deltaTime;
-        timerText.text = Mathf.Round(timer).ToString();
-        if(timer <= 0)
-        {
-            AlunoController.StopControls(true);
-            if (AlunoController.GetMean() > 5)
-            {
-                playerWins = true;
-            }
-            else
-            {
-                gameOver = true;
-            }
+        if (Input.GetKeyDown(KeyCode.W))
+            gameState = GameState.PLAYER_LOSES;
 
-        }
+        if (Input.GetKeyDown(KeyCode.Q))
+            gameState = GameState.PLAYER_WINS;
 
-        if (gameOver)
+        switch (gameState)
         {
-            if (timer > 0)
-            {
-                if (spamTimer < 0)
+            case GameState.RUNNING:
+                timer -= Time.deltaTime;
+                timerText.text = Mathf.Round(timer).ToString();
+                if (timer <= 0)
                 {
-                    perdeuUI.SetActive(true);
-                    float mean = AlunoController.GetMean();
-                    perdeuUI.GetComponentInChildren<Text>().text = mean.ToString(mean > 4 ? "0.00" : "0.0");
-                    Time.timeScale = 0f;
+                    AlunoController.StopControls(true);
+                    if (AlunoController.GetMean() > 5)
+                    {
+                        gameState = GameState.PLAYER_WINS;
+                        playerWins = true;
+                    }
+                    else
+                    {
+                        gameState = GameState.PLAYER_LOSES;
+                        gameOver = true;
+                    }
+
                 }
-                else
-                {
-                    spamTimer -= Time.deltaTime;
-                }
-            }
-            else
-            {
+                break;
+            case GameState.PLAYER_LOSES:
+                ProfessorIA.ai_type = ProfessorIA.AI_TYPE.NONE;
                 perdeuUI.SetActive(true);
                 float mean = AlunoController.GetMean();
                 perdeuUI.GetComponentInChildren<Text>().text = mean.ToString(mean > 4 ? "0.00" : "0.0");
-                Time.timeScale = 0f;
-            }
-        }
+                //Time.timeScale = 0f;
+                break;
+            case GameState.PLAYER_WINS:
+                ProfessorIA.ai_type = ProfessorIA.AI_TYPE.NONE;
+                if (!startedWinMusic)
+                {
+                    startedWinMusic = true;
+                    PlayMusic((int)Songs.WIN_THEME, false);
+                    AudioSource aS = gameObject.AddComponent<AudioSource>();
+                    aS.clip = sounds[((int)Songs.WIN_THEME + 1)];
+                    aS.Play();
+                    aS = gameObject.AddComponent<AudioSource>();
+                    aS.clip = sounds[((int)Songs.WIN_THEME + 2)];
+                    aS.Play();
+                }
 
-        if (playerWins)
-        {
-            PlayMusic(WIN_THEME, false);
-            ganhouUI.SetActive(true);
-            ganhouUI.GetComponentInChildren<Text>().text = AlunoController.GetMean().ToString("0.0");
-            Time.timeScale = 0f;
+                ganhouUI.SetActive(true);
+                ganhouUI.GetComponentInChildren<Text>().text = AlunoController.GetMean().ToString("0.0");
+                //Time.timeScale = 0f;
+                break;
         }
-
+        
         if (busted && !aSource.isPlaying)
         {
             busted = false;
-            PlayMusic(STAGE_THEME, true);
+            PlayMusic((int)Songs.STAGE_THEME, true);
         }
     }
 
     public static void GameOver()
     {
         UnityEngine.Debug.Log((new StackFrame(1)).GetMethod().Name);
-        gameOver = true;
+        gameState = GameState.PLAYER_LOSES;
     }
 
     IEnumerator WaitToLoad ()
@@ -114,12 +130,13 @@ public class GameManager : MonoBehaviour {
 
     public static void GanhouJogo()
     {
-        playerWins = true;
+        gameState = GameState.PLAYER_WINS;
     }
 
     public void PlayAgain ()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        ProfessorIA.ai_type = ProfessorIA.AI_TYPE.AI_1;
         AlunoController.ResetParameters();
         Time.timeScale = 1f;
         //AlunoController.busted = false;
@@ -127,8 +144,7 @@ public class GameManager : MonoBehaviour {
         contadorDeDedoDuro = 0;
         ganhouUI.SetActive(false);
         perdeuUI.SetActive(false);
-        playerWins = false;
-        gameOver = false;
+        gameState = GameState.RUNNING;
         spamTimer = 4f;
     }
 
@@ -142,7 +158,7 @@ public class GameManager : MonoBehaviour {
 
     public void Busted()
     {
-        PlayMusic(BUSTED_THEME, false);
+        PlayMusic((int)Songs.BUSTED_THEME, false);
         busted = true;
     }
 
@@ -163,7 +179,7 @@ public class GameManager : MonoBehaviour {
     {
         //CameraRecord.stopRecord = true;
         float mean = AlunoController.GetMean();
-        if (mean > 5) playerWins = true;
-        else gameOver = true;
+        if (mean > 5) gameState = GameState.PLAYER_WINS;
+        else gameState = GameState.PLAYER_LOSES;
     }
 }
