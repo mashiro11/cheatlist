@@ -133,11 +133,16 @@ public class Cola : MonoBehaviour {
             clicked = false;
         }
 #if UNITY_STANDALONE || UNITY_WEBPLAYER
-        direction.Set(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-        if (Mathf.Abs(direction.x) == Mathf.Abs(direction.y))
+        /*
+        else
         {
-            direction.Set(0, 0);
+            direction.Set(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+            if (Mathf.Abs(direction.x) == Mathf.Abs(direction.y))
+            {
+                direction.Set(0, 0);
+            }
         }
+        */
 
 #elif UNITY_IOS || UNITY_IPHONE || UNITY_ANDROID
         if (Input.touchCount > 0)

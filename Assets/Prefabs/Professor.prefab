@@ -267,7 +267,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf28e7fa28b4fcf409b3921d32ce4a62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  colaNasCostas: 0
   distanciaDaCola: 3
 --- !u!114 &114598325617646898
 MonoBehaviour:
@@ -280,7 +279,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c638d1cd9612aea438e99673d19f2ad7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cola: {fileID: 1741836142685860, guid: f581d7d8091cfb84b9dffdbe650bf1d3, type: 2}
+  ai_type: 0
+  profState: 0
   startingPoint: {x: 3, y: 1}
   speed: 3
   waitTime: 4

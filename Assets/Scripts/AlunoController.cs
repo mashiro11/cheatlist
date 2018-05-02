@@ -45,6 +45,7 @@ public class AlunoController : MonoBehaviour {
     private Animator animator;
     private LineRenderer outline;
     private Slingshot slingshot;
+    private Text meanLabel;
 
     //MetaInfo
     public Vector2 position;
@@ -66,6 +67,15 @@ public class AlunoController : MonoBehaviour {
     }
     public AudioClip[] sounds;
 
+    public enum AlunoStates
+    {
+        IDLE,
+        CHEATING,
+        ASKING,
+        BUSTED,
+        FINISHED
+    }
+    public AlunoStates alState = AlunoStates.IDLE;
     //Infos do objeto
     public int tipoAluno = 0;
     public bool busted = false;
@@ -88,9 +98,11 @@ public class AlunoController : MonoBehaviour {
         slingshot = GetComponentInChildren<Slingshot>();
         outline = GetComponent<LineRenderer>();
         progressoCola = transform.GetChild((int)AlunoChild.ProgressoCola).gameObject;
+        meanLabel = GameObject.Find("ClassMeanLabel").GetComponent<Text>();
 
         animator.SetBool("temCola", false);
     }
+
     private void Start()
     {
         string path = "AnimationControllerOverride/";
@@ -108,26 +120,35 @@ public class AlunoController : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        if (!busted && animator.GetBool("temCola"))
+        switch (alState)
         {
-            if (animator.GetFloat("tempoComCola") < tempoNecessario)
-            {
-                aSource.clip = sounds[(int)AlunoSounds.Colando];
-                aSource.Play();
-                MostraProgressoCola();
-            }
-            else if(needsCheat == this)
-            {
+            case AlunoStates.IDLE:
+                TryAskingForCheat();
+                break;
+            case AlunoStates.CHEATING:
+                if (animator.GetFloat("tempoComCola") < tempoNecessario)
+                {
+                    aSource.clip = sounds[(int)AlunoSounds.Colando];
+                    aSource.Play();
+                    MostraProgressoCola();
+                }
+                if (tempoMinimo > 0)
+                {
+                    tempoMinimo -= Time.deltaTime;
+                }
+                break;
+            case AlunoStates.ASKING:
                 needsCheatTimer -= Time.deltaTime;
                 if (needsCheatTimer < 0)
                 {
                     NeedsCheat(false);
+                    alState = AlunoStates.IDLE;
                 }
-            }
-            if (tempoMinimo > 0)
-            {
-                tempoMinimo -= Time.deltaTime;
-            }
+                break;
+            case AlunoStates.BUSTED:
+                break;
+            case AlunoStates.FINISHED:
+                break;
         }
     }
 
@@ -145,6 +166,8 @@ public class AlunoController : MonoBehaviour {
         if (direction.y > 0) animator.SetInteger("direcao", 3);
         else if(direction.y < 0) animator.SetInteger("direcao", 4);
 
+        if (terminou) alState = AlunoStates.FINISHED;
+        else          alState = AlunoStates.IDLE;
 
         animator.SetTrigger("passandoACola");
         animator.SetBool("temCola", false);
@@ -153,6 +176,7 @@ public class AlunoController : MonoBehaviour {
         progressoCola.SetActive(false);
         colaNasCostas = false;
         bonusSpeed = false;
+        meanLabel.text = "Media da turma: " + GetMean().ToString("0.0");
     }
 
     public void MostraProgressoCola()
@@ -195,7 +219,7 @@ public class AlunoController : MonoBehaviour {
 
     public void RecebeCola ()
     {
-
+        alState = AlunoStates.CHEATING;
         animator.SetBool("temCola", true);
         tempoMinimo = tempoMinimoDefinido;
         progressoCola.SetActive(true);
@@ -232,11 +256,14 @@ public class AlunoController : MonoBehaviour {
                 --finishedCounter;
             }
 
+            alState = AlunoStates.BUSTED;
+            GetComponent<SpriteRenderer>().color = new Color(0.4f, 0.4f, 0.4f);
             busted = true;
             tempoMinimo = 0;
             aSource.Stop();
             aSource.clip = sounds[(int)AlunoSounds.Busted];
             aSource.Play();
+            animator.SetBool("temCola", false);
             animator.SetTrigger("busted");
             progressoCola.SetActive(false);
         }
@@ -346,7 +373,7 @@ public class AlunoController : MonoBehaviour {
 
     private void OnMouseDown()
     {
-        if (animator.GetBool("temCola"))
+        if (alState == AlunoStates.CHEATING)
         {
             slingshot.Clicked();
             clicked = this;
@@ -355,12 +382,12 @@ public class AlunoController : MonoBehaviour {
 
     private void OnMouseDrag()
     {
-        if(animator.GetBool("temCola")) slingshot.Drag();
+        if(alState == AlunoStates.CHEATING) slingshot.Drag();
     }
 
     private void OnMouseUp()
     {
-        if (animator.GetBool("temCola"))
+        if (alState == AlunoStates.CHEATING)
         {
             slingshot.Released();
             clicked = null;
@@ -387,20 +414,12 @@ public class AlunoController : MonoBehaviour {
         alunos[index.x, index.y].GetComponent<AlunoController>().RecebeCola();
     }
 
-    public static void SomeoneNeedsCheat()
+    public void TryAskingForCheat()
     {
-        if(Random.Range(0, 1f) > 0.6)
+        if(!needsCheat && Random.Range(0, 1f) > 0.95)
         {
-            while(!needsCheat)
-            {
-                AlunoController al = alunos[Random.Range(0, maxLinhas), Random.Range(0, maxLinhas)].GetComponent<AlunoController>();
-                if (!needsCheat && Cola.GetShooter() != al && 
-                    !al.busted && !al.terminou)
-                {
-                    needsCheatTimer = needsCheatTime;
-                    al.NeedsCheat(true);
-                }
-            }
+            needsCheatTimer = needsCheatTime;
+            NeedsCheat(true);
         }
     }
 
@@ -409,12 +428,15 @@ public class AlunoController : MonoBehaviour {
         if (needs)
         {
             needsCheat = this;
-            GetComponent<SpriteRenderer>().color = new Color(1, 0, 0);
+            //GetComponent<SpriteRenderer>().color = new Color(1, 0, 0);
+            alState = AlunoStates.ASKING;
+            animator.SetBool("requestCheat", true);
         }
         else
         {
             needsCheat = null;
-            GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
+            animator.SetBool("requestCheat", false);
+            //GetComponent<SpriteRenderer>().color = new Color(1, 1, 1);
         }
     }
 }

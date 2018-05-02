@@ -1,10 +1,64 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 using System.Linq;
 using UnityEngine.XR.WSA.WebCam;
+//using UnityEngine.UI;
 
 public class CameraRecord : MonoBehaviour
 {
+    /*
+    private bool camAvailable;
+    private WebCamTexture webcam;
+    private Texture defaultBackground;
+
+    public RawImage background;
+    public AspectRatioFitter fit;
+
+    private void Start()
+    {
+        defaultBackground = background.texture;
+        WebCamDevice[] devices = WebCamTexture.devices;
+        if(devices.Length == 0)
+        {
+            Debug.Log("No cams");
+            camAvailable = false;
+            return;
+        }
+
+        for(int i = 0; i < devices.Length; i++)
+        {
+            Debug.Log("Device: " + devices[i].name);
+            if(i == 0)
+            {
+                webcam = new WebCamTexture(devices[i].name, Screen.width, Screen.height);
+            }
+        }
+        if(webcam == null)
+        {
+            Debug.Log("No cam");
+            return;
+        }
+        webcam.Play();
+        background.texture = webcam;
+        camAvailable = true;
+    }
+
+    private void Update()
+    {
+        if (!camAvailable)
+            return;
+
+        float ratio = (float)webcam.width / (float)webcam.height;
+        fit.aspectRatio = ratio;
+
+        float scaleY = webcam.videoVerticallyMirrored ? -1f : 1f;
+
+        background.rectTransform.localScale = new Vector3(1f, scaleY, 1f);
+
+        int orient = -webcam.videoRotationAngle;
+        background.rectTransform.localEulerAngles = new Vector3(0, 0, orient);
+    }*/
     static readonly float MaxRecordingTime = 5.0f;
     public static bool stopRecord = false;
     VideoCapture m_VideoCapture = null;

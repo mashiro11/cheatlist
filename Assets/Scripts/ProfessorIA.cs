@@ -8,7 +8,7 @@ public class ProfessorIA : MonoBehaviour {
         AI_2,
         NONE //professor stop
     }
-    public AI_TYPE ai_type = AI_TYPE.NONE;
+    public AI_TYPE ai_type = AI_TYPE.AI_1;
 
     //Machine states
     public enum ProfStates
@@ -116,6 +116,9 @@ public class ProfessorIA : MonoBehaviour {
                     break;
                 case "2":
                     ai_type = AI_TYPE.AI_2;
+                    break;
+                case "0":
+                    ai_type = AI_TYPE.NONE;
                     break;
             }
         }
