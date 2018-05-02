@@ -41,6 +41,11 @@ public class GameManager : MonoBehaviour {
 
 
 void Start () {
+        using (System.IO.StreamWriter file = new System.IO.StreamWriter("teste.txt"))
+        {
+            file.WriteLine("meu arquivo");
+        }
+        
         Screen.orientation = ScreenOrientation.Landscape;
         //timerPanel.GetComponent<Canvas>().renderMode = RenderMode.WorldSpace;
         AlunoController.SpawnAlunos();

@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
-using UnityEngine.XR.WSA.WebCam;
+//using System.Linq;
+//using UnityEngine.XR.WSA.WebCam;
 //using UnityEngine.UI;
 
 public class CameraRecord : MonoBehaviour
@@ -59,6 +59,7 @@ public class CameraRecord : MonoBehaviour
         int orient = -webcam.videoRotationAngle;
         background.rectTransform.localEulerAngles = new Vector3(0, 0, orient);
     }*/
+    /*
     static readonly float MaxRecordingTime = 5.0f;
     public static bool stopRecord = false;
     VideoCapture m_VideoCapture = null;
@@ -146,5 +147,5 @@ public class CameraRecord : MonoBehaviour
     {
         Debug.Log("Stopped Recording Video!");
         m_VideoCapture.StopVideoModeAsync(OnStoppedVideoCaptureMode);
-    }
+    }*/
 }
