@@ -276,7 +276,7 @@ AudioSource:
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
-  Priority: 128
+  Priority: 202
   DopplerLevel: 1
   MinDistance: 1
   MaxDistance: 500
@@ -394,6 +394,8 @@ MonoBehaviour:
   - {fileID: 8300000, guid: b8338be3119c30b4d8944f369a700f0a, type: 3}
   - {fileID: 8300000, guid: 07889479e3f30a849aad00d5e62ec333, type: 3}
   - {fileID: 8300000, guid: 611960b4b0522bd46bfe0bd7dda95bf0, type: 3}
+  - {fileID: 8300000, guid: cda11543089273b4da6ea318cace4875, type: 3}
+  alState: 0
   tipoAluno: 0
   busted: 0
   terminou: 0

@@ -16,12 +16,17 @@ public class GameManager : MonoBehaviour {
     public float timer;
     public static int contadorDeDedoDuro;
     private static bool gameOver = false;
+    public static bool IsGameOver()
+    {
+        return gameState != GameState.RUNNING;
+    }
     private static bool playerWins = false;
     private static float spamTimer = 4f;
     public AudioClip[] sounds;
-    AudioSource aSource;
+    public static AudioSource aSource;
     private bool busted = false;
     private bool startedWinMusic = false;
+
     enum Songs
     {
         STAGE_THEME = 0,
@@ -38,13 +43,11 @@ public class GameManager : MonoBehaviour {
     static GameState gameState = GameState.RUNNING;
 //CameraRecord videoCapture;
 
-
+    void Aweake()
+    {
+    }
 
 void Start () {
-        using (System.IO.StreamWriter file = new System.IO.StreamWriter("teste.txt"))
-        {
-            file.WriteLine("meu arquivo");
-        }
         
         Screen.orientation = ScreenOrientation.Landscape;
         //timerPanel.GetComponent<Canvas>().renderMode = RenderMode.WorldSpace;
@@ -91,7 +94,7 @@ void Start () {
             case GameState.PLAYER_LOSES:
                 ProfessorIA.ai_type = ProfessorIA.AI_TYPE.NONE;
                 perdeuUI.SetActive(true);
-                float mean = AlunoController.GetMean();
+                float mean = (AlunoController.bustedCounter >= AlunoController.chances) ? 0f : AlunoController.GetMean();
                 perdeuUI.GetComponentInChildren<Text>().text = mean.ToString(mean > 4 ? "0.00" : "0.0");
                 //Time.timeScale = 0f;
                 break;
@@ -120,6 +123,7 @@ void Start () {
             busted = false;
             PlayMusic((int)Songs.STAGE_THEME, true);
         }
+        DataCollector.tempoDeJogo = timer;
     }
 
     public static void GameOver()

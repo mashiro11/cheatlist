@@ -51,7 +51,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 0c75410206a293e4e851f20a533938f9, type: 3}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 1
@@ -136,7 +136,7 @@ MonoBehaviour:
   perdeuUI: {fileID: 0}
   timerPanel: {fileID: 0}
   timerText: {fileID: 0}
-  timer: 240
+  timer: 200
   sounds:
   - {fileID: 8300000, guid: 0c75410206a293e4e851f20a533938f9, type: 3}
   - {fileID: 8300000, guid: 85ae28a9025377e4584a31d4b8749767, type: 3}

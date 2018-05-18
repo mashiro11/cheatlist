@@ -174,6 +174,7 @@ public class ProfessorIA : MonoBehaviour {
             animator.SetFloat("waitTimer", waitTime);
             animator.SetBool("professorStopped", false);
         }
+        DataCollector.posicaoProfessor = transform.position;
     }
 
     public void AddPonto(Vector2 ponto)

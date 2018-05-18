@@ -50,6 +50,7 @@ public class Slingshot : MonoBehaviour {
         arcRenderer.gameObject.SetActive(true);
         touchOrigin = parent.position;
         lineRenderer.SetPosition(1, touchOrigin);
+        selector.gameObject.SetActive(true);
     }
 
     public void Drag()
@@ -76,6 +77,7 @@ public class Slingshot : MonoBehaviour {
             al.SetOutline(false);
             touchEnd = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         }
+        selector.gameObject.SetActive(false);
         lineRenderer.SetPosition(1, parent.position);
         lineRenderer.enabled = false;
         arcRenderer.SetPosition(1, parent.position);

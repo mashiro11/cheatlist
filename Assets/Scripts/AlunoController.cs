@@ -19,9 +19,9 @@ public class AlunoController : MonoBehaviour {
     private static float[,] cheatProgress = new float[maxLinhas, maxColunas];
 
     //Inicialização dos contadores para regras de jogo
-    private static int bustedCounter = 0;
+    public static int bustedCounter = 0;
     private static int finishedCounter = 0;
-    private static int chances = 5;
+    public static int chances = 5;
     private static int minToWin = 10;
 
     //Impede jogador de continuar movimentando após fim de jogo
@@ -63,7 +63,8 @@ public class AlunoController : MonoBehaviour {
     {
         PassaCola = 0,
         Busted,
-        Colando
+        Colando,
+        Receive
     }
     public AudioClip[] sounds;
 
@@ -120,6 +121,8 @@ public class AlunoController : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
+        if (GameManager.IsGameOver()) return;
+
         switch (alState)
         {
             case AlunoStates.IDLE:
@@ -128,8 +131,11 @@ public class AlunoController : MonoBehaviour {
             case AlunoStates.CHEATING:
                 if (animator.GetFloat("tempoComCola") < tempoNecessario)
                 {
-                    aSource.clip = sounds[(int)AlunoSounds.Colando];
-                    aSource.Play();
+                    if (!aSource.isPlaying)
+                    {
+                        aSource.clip = sounds[(int)AlunoSounds.Colando];
+                        aSource.Play();
+                    }
                     MostraProgressoCola();
                 }
                 if (tempoMinimo > 0)
@@ -141,6 +147,7 @@ public class AlunoController : MonoBehaviour {
                 needsCheatTimer -= Time.deltaTime;
                 if (needsCheatTimer < 0)
                 {
+                    DataCollector.alunosNaoAtendidos++;
                     NeedsCheat(false);
                     alState = AlunoStates.IDLE;
                 }
@@ -215,6 +222,8 @@ public class AlunoController : MonoBehaviour {
                 }
             }
         }
+        DataCollector.alunosFinalizados = finishedCounter;
+        DataCollector.alunosNaoFinalizados = 20 - finishedCounter - bustedCounter; 
     } 
 
     public void RecebeCola ()
@@ -225,6 +234,9 @@ public class AlunoController : MonoBehaviour {
         progressoCola.SetActive(true);
         if(needsCheat == this)
         {
+            aSource.clip = sounds[(int)AlunoSounds.Receive];
+            aSource.Play();
+            DataCollector.alunosAtendidos++;
             bonusSpeed |= true;
             NeedsCheat(false);
         }
@@ -232,9 +244,11 @@ public class AlunoController : MonoBehaviour {
 
     public void Busted()
     {
+        DataCollector.alunosPegos++;
         //Se chegou no limite de alunos que podem ser pegos, game over
         //Debug.Log(debugTag + "Busted: " + bustedCounter + "| Chances: " + chances);
-        if (++bustedCounter > chances)
+        slingshot.Released();
+        if (++bustedCounter >= chances)
         {
             GameManager.GameOver();
         }
@@ -266,6 +280,7 @@ public class AlunoController : MonoBehaviour {
             animator.SetBool("temCola", false);
             animator.SetTrigger("busted");
             progressoCola.SetActive(false);
+            meanLabel.text = "Media da turma: " + GetMean().ToString("0.0");
         }
     }
 

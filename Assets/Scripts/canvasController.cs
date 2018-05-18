@@ -9,9 +9,11 @@ public class canvasController : MonoBehaviour {
     public Text tutorText;
     public GameObject tutorialUI;
     public GameObject timerPanel;
+    public AudioSource aSource;
     private void Awake()
     {
         Time.timeScale = 0f;
+        aSource = GetComponent<AudioSource>();
     }
     private void Start()
     {
@@ -20,10 +22,11 @@ public class canvasController : MonoBehaviour {
 
     public void LeaveTutorial()
     {
+        DataCollector.StartDataCollection();
+        GameManager.aSource.Play();
         Time.timeScale = 1f;
         tutorialUI.SetActive(false);
         timerPanel.SetActive(true);
-
     }
 
     // Use this for initialization

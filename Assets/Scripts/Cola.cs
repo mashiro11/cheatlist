@@ -45,6 +45,7 @@ public class Cola : MonoBehaviour {
             MoveTo(AlunoController.GetAluno(new Vector2Int((int)(shooter.position.x + direction.y),
                                                            (int)(shooter.position.y + direction.x))));
         }
+        DataCollector.posicaoCola = transform.position;
 	}
 
     public void OnTriggerEnter2D(Collider2D collider)
@@ -78,6 +79,7 @@ public class Cola : MonoBehaviour {
     {
         receiver = aluno;
         if (receiver != null) {
+            DataCollector.transmissao++;
             Vector3 direction = receiver.transform.position - shooter.transform.position;
             direction = Vector3.Normalize(direction);
             int reducer = 0;
